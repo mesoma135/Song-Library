@@ -117,3 +117,31 @@ SELECT * FROM SongDB.UserAccount;
 SELECT * FROM SongDB.Playlist; 
 SELECT * FROM SongDB.PlaylistSong; 
 SELECT * FROM SongDB.UserHistory; 
+
+ALTER TABLE UserAccount
+ADD Password VARCHAR(255) DEFAULT 'temp';
+UPDATE UserAccount SET Password = 'temp';
+
+ALTER TABLE Playlist DROP FOREIGN KEY playlist_ibfk_1;
+ALTER TABLE UserAccount
+MODIFY COLUMN UserID INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE UserHistory DROP FOREIGN KEY userhistory_ibfk_1;
+ALTER TABLE UserAccount
+MODIFY COLUMN UserID INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE Playlist
+ADD CONSTRAINT playlist_ibfk_1
+FOREIGN KEY (UserID) REFERENCES UserAccount(UserID);
+
+ALTER TABLE UserHistory
+ADD CONSTRAINT userhistory_ibfk_1
+FOREIGN KEY (UserID) REFERENCES UserAccount(UserID);
+
+SELECT 
+    table_name, constraint_name
+FROM 
+    information_schema.key_column_usage
+WHERE 
+    referenced_table_name = 'UserAccount'
+    AND referenced_column_name = 'UserID';

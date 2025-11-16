@@ -37,7 +37,7 @@ const playlistRoutes = require('./routes/playlistRoutes');
 const playlistSongRoutes = require('./routes/playlistSongRoutes');
 const userRoutes = require('./routes/userRoutes');
 
-app.use('/api/auth', ()=> authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/artist', artistRoutes);
 app.use('/api/export', ()=> exportRoutes);
 app.use('/api/song', songRoutes);
