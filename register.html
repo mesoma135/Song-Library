@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Songify - Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Register Container */
+        .register-container {
+            background-color: #1f1f1f;
+            padding: 40px 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .register-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ff1db9;
+        }
+
+        .register-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .register-container input[type="text"],
+        .register-container input[type="email"],
+        .register-container input[type="password"] {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: none;
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+
+        .register-container input::placeholder {
+            color: #aaa;
+        }
+
+        .register-container button {
+            padding: 12px;
+            border-radius: 50px;
+            border: none;
+            background-color: #ff1db9;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .register-container button:hover {
+            background-color: #e01aa5;
+            transform: scale(1.05);
+        }
+
+        .register-container .login-link {
+            margin-top: 15px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        .register-container .login-link a {
+            color: #ff1db9;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .register-container .login-link a:hover {
+            color: #e01aa5;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .register-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <h1>Register</h1>
+        <form action="/register" method="post">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+            <button type="submit" onclick="window.location.href='login.html'">Register</button>
+        </form>
+        <div class="login-link">
+            Already have an account? <button onclick="window.location.href='login.html'">Login here</button>
+        </div>
+    </div>
+
+</body>
+</html>
