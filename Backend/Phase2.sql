@@ -56,22 +56,21 @@ CREATE TABLE UserHistory (
     FOREIGN KEY (SongID) REFERENCES Song(SongID)
 );
 
-
 INSERT INTO Artist VALUES 
 (1, 'Taylor Swift', 12 , 1700 , 10000000, 120000000),
 (2, 'Stray Kids', 6 , 360, 500000, 5000000),
 (3, 'Bad Omens', 3, 88, 300000, 660000),
 (4, 'Gracie Abrams', 3 , 300, 12000000, 30000000),
-(5, 'The weekend', 6, 1000, 40000000, 33000000),
+(5, 'The Weeknd', 6, 1000, 40000000, 33000000),
 (6, 'Burna Boy', 8, 428, 30000000, 22000000);
 
-INSERT INTO Song VALUES 
-(101, ' Guilty as sin' , 1,' 00:04:14', 1000000, 'pop', '2024-04-19'),
-(102, ' Domino ' , 2, '00:03:17' , 140000, 'Kpop' ,'2021-08-23'),
-(103, ' THE DEATH OF PEACE OF MIND' ,3, '00:04:00',500000, 'Metal' , '2022-02-05'),
-(104, ' Camden' , 4 , '00:04:06' , 800000, 'Pop', '2021-11-12'),
-(105, 'House of balloons', 5, '00:06:45',1000000, 'R&B', '2011-03-21'),
-(106, 'Love', 6, '00:02:56', 200000, 'Afrobeats', '2025-08-12');
+INSERT INTO Song VALUES
+(201, 'Anti-Hero', 1, '00:03:20', 1200000000, 'Pop', '2022-10-21'),
+(202, 'Seven', 2, '00:03:05', 650000000, 'Kpop', '2023-07-14'),
+(203, 'Just Pretend', 3, '00:03:58', 98000000, 'Metal', '2022-11-03'),
+(204, 'I Miss You, I’m Sorry', 4, '00:03:24', 210000000, 'Indie Pop', '2020-02-21'),
+(205, 'Blinding Lights', 5, '00:03:20', 3700000000, 'R&B', '2019-11-29'),
+(206, 'Last Last', 6, '00:02:53', 540000000, 'Afrobeats', '2022-05-13');
 
 INSERT INTO UserAccount VALUES
 (1, 'Najin' , 'najin.seifi@ontariotechu.net','Iran', '2023-03-01'),
@@ -88,7 +87,6 @@ INSERT INTO UserAccount VALUES
  (4, 6, 'bops', '2025-09-10'),
  (5, 5, 'driving mix', '2024-12-08'),
  (6, 4, 'bangers', '2025-06-01');
- 
  
  INSERT INTO PlaylistSong VALUES 
  (1, 101, '2025-11-04'),
@@ -111,7 +109,6 @@ INSERT INTO UserHistory VALUES
 (4, 3, 106, '2025-11-04 19:00:00', 'Phone'),
 (5, 4, 103,  '2025-11-04 18:34:00', 'Tablet'),
 (6, 6, 104,  '2025-11-04 00:23:00', 'Laptop');
-
 
 USE SongDB;
 SELECT * FROM SongDB.Artist; 
