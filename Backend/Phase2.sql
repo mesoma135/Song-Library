@@ -183,3 +183,9 @@ CREATE TABLE TokenBlacklist (
     token VARCHAR(500) NOT NULL,
     blacklistedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE UserAccount ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user';
+UPDATE UserAccount SET role = 'admin' WHERE UserID = 9;
+ALTER TABLE UserAccount ADD COLUMN isBanned BOOLEAN NOT NULL DEFAULT FALSE;
+DESCRIBE UserAccount;
+UPDATE SongDB.UserAccount SET role = 'admin' WHERE UserID = 8;

@@ -26,24 +26,27 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
     try {
         // Find user
-        const [users] = await db.promise().query(
-            "SELECT * FROM UserAccount WHERE Email = ?",
-            [email]
-        );
-        if (users.length === 0) {
+        const [rows] = await db.promise().query("SELECT UserID, UserName, Email, Password, role, isBanned FROM UserAccount WHERE Email = ?", [email]);
+        if (rows.length === 0) {
             return res.status(400).json({ error: "User not found" });
         }
-        const user = users[0];
+        const user = rows[0];
 
         // Check password
         const isMatch = await bcrypt.compare(password, user.Password);
         if (!isMatch) {
             return res.status(400).json({ error: "Invalid password" });
         }
-
+        if (user.isBanned) {
+            return res.status(403).json({ error: "This account has been banned" });
+          }
         // Create token
         const token = jwt.sign(
-            { userId: user.UserID },
+            { 
+                userId: user.UserID,
+            role: user.role,
+        isBanned: user.isBanned
+    },
             process.env.JWT_SECRET,
             { expiresIn: "2h" }
         );
@@ -63,7 +66,7 @@ exports.logout = async (req, res) => {
       const token = authHeader.split(" ")[1];
 
       const decoded = jwt.decode(token);
-      
+
       // Save the token to blacklist
       await db.promise().query(
         "INSERT INTO TokenBlacklist (token) VALUES (?)", [token]);

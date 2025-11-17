@@ -6,7 +6,8 @@ exports.getSongsbyTitle = async (req, res) => {
         const [songs] = await db.promise().query("SELECT * FROM Song WHERE Title = ?", [req.params.songName]);
 
         res.json(songs);
-    } catch (err) {
+    } 
+    catch (err) {
         res.status(500).json({ error: "An error occured..."})
     }
 }
@@ -24,8 +25,22 @@ exports.getSongsByArtistName = async (req, res) => {
             return res.status(404).json({ error: "No songs found for this artist" });
         }
         res.json(songs);
-    } catch (err) {
+    } 
+    catch (err) {
         res.status(500).json({ error: "An error occured...", details: err});
+    }
+};
+
+//DELETE song by id (Admin only)
+exports.deleteSong = async (req, res) => {
+    try {
+      const songId = req.params.songId;
+      await db.promise().query("DELETE FROM Songs WHERE SongID = ?", [req.params.songId]);
+      return res.json({ message: "Song deleted successfully" });
+    } 
+    catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to delete song" });
     }
 };
 
@@ -38,7 +53,8 @@ exports.getSongById = async (req, res) => {
             return res.status(404).json({ error: "Song not found" });
         }
         res.json(song[0]);
-    } catch (err) {
+    } 
+    catch (err) {
         res.status(500).json({ error: "An error occured...", details: err});
     }
 };
