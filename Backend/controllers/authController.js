@@ -1,17 +1,21 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const countriesterritories = require('../utils/countriesterritories');
 
 //POST Registration for new users
 exports.register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, countries} = req.body;
     try {
+        if(!countriesterritories.includes(countries)){
+            return res.status(500).json({ error: "Invalid Country" });
+        }
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
         // User insert
         const [result] = await db.promise().query(
-            "INSERT INTO UserAccount (UserName, Email, Password, JoinDate) VALUES (?, ?, ?, CURDATE())",
-            [username, email, hashedPassword]
+            "INSERT INTO UserAccount (UserName, Email, Password, Country, JoinDate) VALUES (?, ?, ?, ?, CURDATE())",
+            [username, email, hashedPassword, countries]
         );
         res.json({ message: "User registered", userId: result.insertId });
     } catch (err) {
