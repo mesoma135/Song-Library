@@ -59,3 +59,12 @@ exports.getSongById = async (req, res) => {
     }
 };
 
+// GET all songs
+exports.getAllSongs = async (req, res) => {
+    try {
+        const [songs] = await db.promise().query("SELECT * FROM Song");
+        res.json(songs);
+    } catch (err) {
+        res.status(500).json({ error: "An error occurred", details: err });
+    }
+};
