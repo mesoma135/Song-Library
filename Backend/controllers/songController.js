@@ -26,7 +26,7 @@ exports.getSongsByArtistName = async (req, res) => {
         }
         res.json(songs);
     } 
-    catch (err) {
+    catch (err){
         res.status(500).json({ error: "An error occured...", details: err});
     }
 };
