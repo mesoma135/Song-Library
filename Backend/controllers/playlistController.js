@@ -57,7 +57,7 @@ exports.deletePlaylist = async (req, res) => {
         if (check.length === 0) {
             return res.status(403).json({ error: "Not authorized to delete this playlist" });
         }
-        console.log("Deleting playlist:", req.params.id, "User:", req.user.userId);
+        console.log("Deleting playlist:", req.params.id, "User:", req.user.userId); //console log for more details on deletion status
         await db.promise().query(
             "DELETE FROM Playlist WHERE PlaylistID = ?", [req.params.id]);
         res.json({ message: "Playlist deleted" });
