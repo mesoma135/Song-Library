@@ -14,7 +14,8 @@ exports.register = async (req, res) => {
             [username, email, hashedPassword]
         );
         res.json({ message: "User registered", userId: result.insertId });
-    } catch (err) {
+    } 
+    catch (err) {
         console.log(err);
         res.status(500).json({ error: "Registration failed" });
     }
@@ -47,7 +48,29 @@ exports.login = async (req, res) => {
             { expiresIn: "2h" }
         );
         res.json({ message: "Login successful", token });
-    } catch (err) {
+    } 
+    catch (err) {
         res.status(500).json({ error: "Login failed" });
     }
 };
+
+exports.logout = async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(400).json({ error: "No token found" });
+      }
+      const token = authHeader.split(" ")[1];
+
+      const decoded = jwt.decode(token);
+      
+      // Save the token to blacklist
+      await db.promise().query(
+        "INSERT INTO TokenBlacklist (token) VALUES (?)", [token]);
+      return res.json({ message: "Logout successful" });
+    } 
+    catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Logout unsuccessful", details: err });
+    }
+  };
