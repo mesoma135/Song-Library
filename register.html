@@ -106,6 +106,16 @@
         <form action="/register" method="post">
             <input type="text" name="username" placeholder="Username" required>
             <input type="email" name="email" placeholder="Email" required>
+            <label>Country: </label>
+            <select id="country" name="country" required>
+                <option value="Iran">Iran</option>
+                <option value="Canada">Canada</option>
+                <option value="Antarctica">Antarctica</option>
+                <option value="Poland">Poland</option>
+                <option value="Romania">Romania</option>
+                <option value="United States Of America">United States Of America</option>
+                <option value="El Salvador">El Salvador</option>
+            </select>
             <input type="password" name="password" placeholder="Password" required>
             <input type="password" name="confirm_password" placeholder="Confirm Password" required>
             <button type="submit" onclick="window.location.href='login.html'">Register</button>
