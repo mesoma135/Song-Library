@@ -41,7 +41,7 @@ app.use('/api/artist', artistRoutes);
 app.use('/api/export', ()=> exportRoutes);
 app.use('/api/song', songRoutes);
 app.use('/api/playlist', playlistRoutes);
-app.use('/api/playlistSong', ()=> playlistSongRoutes);
+app.use('/api/playlistSong', playlistSongRoutes);
 app.use('/api/user', ()=> userRoutes);
 
 app.use(require('./middleware/errorMiddleware'));
