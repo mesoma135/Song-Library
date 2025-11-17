@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const db = require('./config/db');
-
 const app = express();
 
 //middleware
@@ -41,6 +40,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/artist', artistRoutes);
 app.use('/api/export', ()=> exportRoutes);
 app.use('/api/song', songRoutes);
-app.use('/api/playlist', ()=>  playlistRoutes);
+app.use('/api/playlist', playlistRoutes);
 app.use('/api/playlistSong', ()=> playlistSongRoutes);
 app.use('/api/user', ()=> userRoutes);

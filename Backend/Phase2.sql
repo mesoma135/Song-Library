@@ -145,3 +145,35 @@ FROM
 WHERE 
     referenced_table_name = 'UserAccount'
     AND referenced_column_name = 'UserID';
+  SELECT
+    table_name, constraint_name
+FROM
+    information_schema.key_column_usage
+WHERE
+    referenced_table_name = 'Playlist'
+    AND referenced_column_name = 'PlaylistID';
+    ALTER TABLE PlaylistSong DROP FOREIGN KEY playlistSong_ibfk_1;
+    ALTER TABLE Playlist
+MODIFY PlaylistID INT NOT NULL AUTO_INCREMENT;
+ALTER TABLE PlaylistSong
+ADD CONSTRAINT playlistSong_ibfk_1
+FOREIGN KEY (PlaylistID) REFERENCES Playlist(PlaylistID);
+
+ALTER TABLE PlaylistSong DROP FOREIGN KEY playlistSong_ibfk_1;
+ALTER TABLE PlaylistSong
+ADD CONSTRAINT playlistSong_ibfk_1
+FOREIGN KEY (PlaylistID)
+REFERENCES Playlist(PlaylistID)
+ON DELETE CASCADE;
+
+ALTER TABLE PlaylistSong 
+DROP FOREIGN KEY playlistSong_ibfk_1;
+
+ALTER TABLE Playlist 
+MODIFY PlaylistID INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE PlaylistSong
+ADD CONSTRAINT playlistSong_ibfk_1
+FOREIGN KEY (PlaylistID)
+REFERENCES Playlist(PlaylistID)
+ON DELETE CASCADE;
