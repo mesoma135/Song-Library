@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const songController = require('../controllers/songController');
 const allowedRoles = require('../middleware/roleMiddleware');
-
+const authMiddleware = require('../middleware/authMiddleware');
 
   
 //GET song by title
