@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Songify - Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .register-container {
+            background-color: #1f1f1f;
+            padding: 40px 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            width: 100%;
+            max-width: 400px;
+            color: #fff;
+        }
+
+        .register-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ff1db9;
+        }
+
+        .register-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .register-container input[type="text"],
+        .register-container input[type="email"],
+        .register-container input[type="password"] {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            border: none;
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+
+        .register-container input::placeholder {
+            color: #aaa;
+        }
+
+        .register-container button {
+            padding: 12px;
+            border-radius: 50px;
+            border: none;
+            background-color: #ff1db9;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .register-container button:hover {
+            background-color: #e01aa5;
+            transform: scale(1.05);
+        }
+
+        .error {
+            color: #ff4d4f;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .login-link {
+            margin-top: 15px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        .login-link a {
+            color: #ff1db9;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #e01aa5;
+        }
+
+        @media (max-width: 500px) {
+            .register-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <h1>Register</h1>
+    <form id="registerForm">
+        <input type="text" name="username" placeholder="Username" required>
+        <div id="usernameError" class="error"></div>
+
+        <input type="email" name="email" placeholder="Email" required>
+        <div id="emailError" class="error"></div>
+
+        <input type="password" name="password" placeholder="Password" required>
+        <div id="passwordError" class="error"></div>
+
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+        <div id="confirmError" class="error"></div>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <button onclick="window.location.href='login.html'">Login here</button>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Clear previous errors
+            document.querySelectorAll('.error').forEach(el => el.textContent = '');
+
+            const data = {
+                username: form.username.value,
+                email: form.email.value,
+                password: form.password.value,
+                confirm_password: form.confirm_password.value
+            };
+
+            try {
+                const res = await fetch('http://localhost:3000/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                console.log(result); // for debugging
+
+                if (res.ok) {
+                    alert("Registration successful!");
+                    window.location.href = 'index.html';
+                } else if (result.errors) {
+                    // show validation errors
+                    result.errors.forEach(err => {
+                        const field = document.getElementsByName(err.param)[0];
+                        const errorDiv = document.getElementById(field.name + 'Error');
+                        if (errorDiv) errorDiv.textContent = err.msg;
+                    });
+                } else {
+                    alert(result.error || 'Registration failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error connecting to server');
+            }
+        });
+    </script>
+</div>
+
+</body>
+</html>

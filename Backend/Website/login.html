@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Songify - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Global Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #121212; color: #ffffff; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .login-container { background-color: #1f1f1f; padding: 40px 50px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); width: 100%; max-width: 400px; }
+        .login-container h1 { text-align: center; margin-bottom: 30px; color: #ff1db9; }
+        .login-container form { display: flex; flex-direction: column; }
+        .login-container input[type="email"], .login-container input[type="password"] { padding: 12px 15px; margin-bottom: 20px; border-radius: 8px; border: none; background-color: #2a2a2a; color: #ffffff; }
+        .login-container input::placeholder { color: #aaa; }
+        .login-container button { padding: 12px; border-radius: 50px; border: none; background-color: #ff1db9; color: #ffffff; font-weight: bold; cursor: pointer; transition: background 0.3s ease, transform 0.3s ease; }
+        .login-container button:hover { background-color: #e01aa5; transform: scale(1.05); }
+        .login-container .register { margin-top: 15px; text-align: center; color: #aaa; }
+        .login-container .register button { background: none; border: none; color: #ff1db9; font-weight: bold; cursor: pointer; }
+        .login-container .register button:hover { color: #e01aa5; }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h1>Login</h1>
+    <form id="loginForm">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
+
+    <div class="register">
+        Don't have an account?
+        <button onclick="window.location.href='register.html'">Register here</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        const data = {
+            email: form.email.value,
+            password: form.password.value
+        };
+
+        try {
+            const res = await fetch('http://localhost:3000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                // Save token and username
+                localStorage.setItem('token', result.token);
+                localStorage.setItem('username', result.username); // ensure your API returns username
+                alert('Login successful!');
+                window.location.href = 'index.html';
+            } else {
+                alert(result.error || 'Login failed');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error connecting to server');
+        }
+    });
+</script>
+
+</body>
+</html>
