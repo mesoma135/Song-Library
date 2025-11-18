@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Songify - Artists</title>
+  <link rel="stylesheet" href="Style.css">
+  <style>
+    .artist-list { max-width: 800px; margin: 50px auto; }
+    .artist-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background-color: #1f1f1f;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      color: #fff;
+    }
+    .artist-item h3 { margin: 0; }
+    .artist-item p { margin: 0; }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background-color: #1f1f1f;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .navbar .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff1db9;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .logo a {
+      text-decoration: none;
+      color: #ff1db9;
+    }
+
+    .nav-links a:hover {
+      color: #ff1db9;
+    }
+
+    .nav-links a.active {
+      color: #ff1db9;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<header class="navbar">
+  <div class="logo"><a href="index.html">Songify</a></div>
+  <nav class="nav-links">
+    <a href='index.html'>Home</a>
+    <a href='Songs.html'>Songs</a>
+    <a href='Artists.html' class="active">Artists</a>
+    <a href='Playlists.html'>Playlists</a>
+  </nav>
+</header>
+
+<section class="artist-list" id="artistList">
+  <h2>All Artists</h2>
+  <!-- Artists will be populated here dynamically -->
+</section>
+
+<script>
+  async function loadArtists() {
+    try {
+      const res = await fetch('http://localhost:3000/api/artist/all'); // <-- API endpoint for all artists
+      const artists = await res.json();
+
+      const container = document.getElementById('artistList');
+
+      // Sort by TotalPlays descending
+      artists.sort((a, b) => b.TotalPlays - a.TotalPlays);
+
+      artists.forEach((artist, index) => {
+        const div = document.createElement('div');
+        div.classList.add('artist-item');
+
+        div.innerHTML = `
+                        <h3>${index + 1}. ${artist.Name}</h3>
+                        <p>${artist.TotalPlays.toLocaleString()} plays</p>
+                    `;
+        container.appendChild(div);
+      });
+
+    } catch (err) {
+      console.error('Error loading artists:', err);
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', loadArtists);
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Songify - Home</title>
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        /* Additional auth styles */
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .auth-buttons .welcome {
+            color: #ff1db9;
+            font-weight: bold;
+        }
+        .auth-buttons button {
+            padding: 8px 15px;
+            border-radius: 50px;
+            border: none;
+            background-color: #ff1db9;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .auth-buttons button:hover {
+            background-color: #e01aa5;
+            transform: scale(1.05);
+        }
+        .logo a {
+            text-decoration: none;
+            color: #ff1db9;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header / Navigation -->
+<header class="navbar">
+    <div class="logo"><a href="index.html">Songify</div>
+    <nav class="nav-links">
+        <a href='Index.html' class="active">Home</a>
+        <a href='Songs.html'>Songs</a>
+        <a href='Artists.html'>Artists</a>
+        <a href='Playlists.html'>Playlists</a>
+    </nav>
+    <div class="auth-buttons" id="authButtons">
+        <!-- Will be populated by JS -->
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Discover Your Next Favorite Song</h1>
+        <p>Explore millions of tracks, your favorite artists, and curated playlists in one place.</p>
+        <div class="hero-buttons">
+            <a href='songs.html' class="btn btn-primary">Explore Songs</a>
+            <a href='artists.html' class="btn btn-secondary">View Artists</a>
+        </div>
+    </div>
+</section>
+
+<!-- Top Artists Section -->
+<section class="featured">
+    <h2>Top Artists</h2>
+    <div class="card-container">
+        <div class="card">
+            <h3></h3>
+            <p></p>
+        </div>
+        <div class="card">
+            <h3></h3>
+            <p></p>
+        </div>
+        <div class="card">
+            <h3></h3>
+            <p></p>
+        </div>
+        <div class="card">
+            <h3></h3>
+            <p></p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-left">
+            <h3>Songify</h3>
+            <p>Explore your favourite artists and their music, make playlists with the best songs. Your next hit is just a click away.</p>
+        </div>
+        <div class="footer-right">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href='Index.html'>Home</a></li>
+                <li><a href='Songs.html'>Songs</a></li>
+                <li><a href='Artists.html'>Artists</a></li>
+                <li><a href='Playlists.html'>Playlists</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Update auth buttons dynamically
+    const authDiv = document.getElementById('authButtons');
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+
+    if (token && username) {
+        // User is logged in
+        authDiv.innerHTML = `
+            <span class="welcome">Welcome, ${username}</span>
+            <button id="logoutBtn">Logout</button>
+        `;
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.reload(); // refresh to show login button
+        });
+    } else {
+        // User is not logged in
+        authDiv.innerHTML = `
+            <button class="login-btn" onclick="window.location.href='login.html'">Login</button>
+        `;
+    }
+
+    // Load Top Artists
+    async function loadTopArtistNames() {
+        try {
+            const res = await fetch('http://localhost:3000/api/artist/top');
+            const artists = await res.json();
+
+            const cards = document.querySelectorAll('.card-container .card');
+            artists.forEach((artist, index) => {
+                if (cards[index]) {
+                    cards[index].querySelector('h3').textContent = artist.Name;
+                    cards[index].querySelector('p').textContent = artist.TotalPlays.toLocaleString() + " plays";
+                }
+            });
+        } catch (err) {
+            console.error('Error loading top artists:', err);
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadTopArtistNames);
+</script>
+
+</body>
+</html>
