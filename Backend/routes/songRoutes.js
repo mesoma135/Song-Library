@@ -4,7 +4,6 @@ const songController = require('../controllers/songController');
 const allowedRoles = require('../middleware/roleMiddleware');
 const authMiddleware = require('../middleware/authMiddleware');
 
-  
 //GET song by title
 router.get('/title/:songName', songController.getSongsbyTitle);
 
