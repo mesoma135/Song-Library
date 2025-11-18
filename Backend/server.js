@@ -37,6 +37,7 @@ const playlistSongRoutes = require('./routes/playlistSongRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const newsapiRoutes = require('./routes/newsapiRoutes');
 const errorMiddleware = require('./middleware/errorMiddleware');
+const playHistoryRoutes = require('./routes/playHistoryRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/export', exportRoutes);
@@ -47,3 +48,4 @@ app.use('/api/playlistSong', playlistSongRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/news', newsapiRoutes);
 app.use('/api/globalerrorhandler', errorMiddleware);
+app.use('/api', playHistoryRoutes);
