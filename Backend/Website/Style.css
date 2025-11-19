@@ -146,6 +146,10 @@ body {
     text-align: center;
 }
 
+.card p{
+    padding-bottom: 15px;
+}
+
 .card:hover {
     transform: scale(1.05);
     box-shadow: 0 10px 20px rgba(0,0,0,0.5);

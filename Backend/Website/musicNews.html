@@ -5,7 +5,7 @@
     <title>Music News</title>
 
     <style>
-        
+
         * {
             margin: 0;
             padding: 0;
@@ -19,42 +19,41 @@
             line-height: 1.6;
         }
 
-        /* NAVBAR */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 50px;
-            background-color: #181818;
-            border-bottom: 1px solid #2a2a2a;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            padding: 15px 30px;
+            background-color: #1f1f1f;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        .logo {
-            font-size: 24px;
+        .navbar .logo {
+            font-size: 28px;
             font-weight: bold;
             color: #ff1db9;
         }
+
         .logo a {
             text-decoration: none;
-            color: inherit;
-        }
-        .logo a:hover {
             color: #ff1db9;
         }
 
         .nav-links a {
-            color: #ffffff;
+            color: #fff;
             text-decoration: none;
-            margin: 0 15px;
+            margin-left: 25px;
+            font-weight: 500;
             transition: color 0.3s ease;
         }
 
-        .nav-links a:hover,
+        .nav-links a:hover {
+            color: #ff1db9;
+        }
+
         .nav-links a.active {
             color: #ff1db9;
+            font-weight: bold;
         }
 
         /* PAGE TITLE */
@@ -135,8 +134,11 @@
 
         <div class="nav-links">
             <a href="Index.html">Home</a>
-            <a href="musicNews.html" class="active">Music News</a>
+            <a href='Songs.html'>Songs</a>
+            <a href='Artists.html'>Artists</a>
             <a href="playlists.html">Playlists</a>
+            <a href="musicNews.html" class="active">Music News</a>
+            <a href='views.html'>Views</a>
         </div>
     </div>
 

@@ -30,8 +30,8 @@
       color: #fff;
       text-decoration: none;
       margin-left: 25px;
-      font-weight: 500;
-      transition: color 0.3s ease;
+    font-weight: 500;
+    transition: color 0.3s ease;
     }
 
     .nav-links a:hover {
@@ -50,8 +50,8 @@
     .playlist h3 { margin-bottom: 10px; }
     .song-item {
       display: flex;
-      justify-content: space-between; /* Keep title on left, controls on right */
-      align-items: center;           /* Vertically center dropdown & button */
+      justify-content: space-between;
+      align-items: center;
       padding: 5px 10px;
       background-color: #1f1f1f;
       margin-bottom: 5px;
@@ -62,16 +62,16 @@
     .song-item .controls {
       display: flex;
       align-items: center;
-      gap: 10px; /* Space between dropdown and button */
+      gap: 10px;
     }
 
     .song-item select {
       padding: 8px 10px;
       border-radius: 5px;
-      border: 1px solid #000;    /* Black border */
-      background-color: #2a2a2a; /* Dark background */
+      border: 1px solid #000;
+      background-color: #2a2a2a;
       color: #fff;
-      width: 200px;              /* Wider width */
+      width: 200px;
     }
 
     .song-item select option {
@@ -94,8 +94,8 @@
     }
 
     .playlist-form input{
-      border: 1px solid #000;    /* Black border */
-      background-color: #2a2a2a; /* Dark background */
+      border: 1px solid #000;
+      background-color: #2a2a2a;
       color: #fff;
     }
 
@@ -104,461 +104,389 @@
 <body>
 
 <header class="navbar">
-  <div class="logo">Songify</div>
+  <div class="logo"><a href="index.html">Songify</a></div>
   <nav class="nav-links">
     <a href="index.html">Home</a>
     <a href="Songs.html">Songs</a>
     <a href="Artists.html">Artists</a>
     <a href="Playlists.html" class="active">Playlists</a>
-      <a href='views.html'>Views</a>
+    <a href="musicNews.html">Music News</a>
+    <a href='views.html'>Views</a>
   </nav>
 </header>
 
 <div class="container">
-  <!-- Create Playlist Form -->
   <div class="playlist-form">
     <h2>Create New Playlist</h2>
     <input type="text" id="playlistName" placeholder="Playlist Name">
     <button onclick="createPlaylist()">Create</button>
   </div>
 
-  <!-- User Playlists -->
   <div class="playlists" id="playlistsContainer">
     <h2>Your Playlists</h2>
-    <!-- Playlists will be inserted here -->
   </div>
 
   <div class="all-songs" id="allSongsContainer">
     <h2>All Songs</h2>
-
     <div id="searchBar" style="margin-bottom: 15px;">
-      <input type="text" id="songSearch" placeholder="Search songs..."
-             style="padding: 10px; width: 100%; max-width: 300px; border-radius: 5px;
-                  border: 1px solid #000; background-color: #2a2a2a; color: #fff;">
-      <select id="searchType"
-              style="padding: 10px; border-radius: 5px; background-color:#2a2a2a; color:#fff; border: 1px solid #000; margin-left: 10px;">
+      <input type="text" id="songSearch" placeholder="Search songs..." style="padding: 10px; width: 100%; max-width: 300px; border-radius: 5px; border: 1px solid #000; background-color: #2a2a2a; color: #fff;">
+      <select id="searchType" style="padding: 10px; border-radius: 5px; background-color:#2a2a2a; color:#fff; border: 1px solid #000; margin-left: 10px;">
         <option value="title">Search by Title</option>
         <option value="artist">Search by Artist</option>
       </select>
     </div>
 
-    <div id="songsList">
-      <!-- Songs will be inserted here -->
-    </div>
+    <div id="songsList"></div>
   </div>
 
-
   <script>
-  const token = localStorage.getItem('token');
-  if (!token) {
-    alert("You must be logged in to view playlists");
-    window.location.href = "login.html";
-  }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("You must be logged in to view playlists");
+      window.location.href = "login.html";
+    }
 
-  // Fetch all songs from backend
-  // global song data
-  window.songData = [];
+    window.songData = [];
+    window.playlists = [];
 
-  async function loadAllSongs() {
-    try {
-      const songsRes = await fetch('http://localhost:3000/api/song/allWithArtist');
-      const allSongs = await songsRes.json();
-      window.songData = allSongs.sort((a,b) => a.Title.localeCompare(b.Title));
+    async function loadAllSongs() {
+      try {
+        const songsRes = await fetch('http://localhost:3000/api/song/allWithArtist');
+        const allSongs = await songsRes.json();
+        window.songData = allSongs.sort((a,b) => a.Title.localeCompare(b.Title));
+        displaySongs(window.songData);
 
-      displaySongs(window.songData);
+        const searchInput = document.getElementById('songSearch');
+        const searchType = document.getElementById('searchType');
 
-      const searchInput = document.getElementById('songSearch');
-      const searchType = document.getElementById('searchType');
+        const filterSongs = () => {
+          const query = searchInput.value.toLowerCase();
+          const type = searchType.value;
 
-      // filter songs when typing or changing dropdown
-      const filterSongs = () => {
-        const query = searchInput.value.toLowerCase();
-        const type = searchType.value;
+          const filtered = window.songData.filter(song => {
+            if (type === 'title') return song.Title.toLowerCase().startsWith(query);
+            if (type === 'artist') return song.ArtistName.toLowerCase().startsWith(query);
+            return true;
+          });
 
-        const filtered = window.songData.filter(song => {
-          if (type === 'title') return song.Title.toLowerCase().startsWith(query);
-          if (type === 'artist') return song.ArtistName.toLowerCase().startsWith(query);
-          return true;
+          displaySongs(filtered);
+        };
+
+        searchInput.addEventListener('input', filterSongs);
+        searchType.addEventListener('change', filterSongs);
+
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load songs or playlists');
+      }
+    }
+
+    function displaySongs(songs) {
+      const container = document.getElementById('songsList');
+      container.innerHTML = '';
+
+      const playlists = window.playlists || [];
+
+      songs.forEach(song => {
+        const div = document.createElement('div');
+        div.classList.add('song-item');
+
+        const leftDiv = document.createElement('div');
+        leftDiv.style.display = 'flex';
+        leftDiv.style.alignItems = 'center';
+        leftDiv.style.gap = '10px';
+        leftDiv.innerHTML = `
+          <span>${song.Title}</span>
+          <span style="color:#aaa;">(${song.ArtistName})</span>
+          <span style="color:#ff1db9;">${song.Length}</span>
+      `;
+
+        const controlsDiv = document.createElement('div');
+        controlsDiv.classList.add('controls');
+
+        const select = document.createElement('select');
+        playlists.forEach(pl => {
+          const option = document.createElement('option');
+          option.value = pl.PlaylistID;
+          option.textContent = pl.PlaylistName;
+          select.appendChild(option);
         });
 
-        displaySongs(filtered);
-      };
+        const addBtn = document.createElement('button');
+        addBtn.textContent = 'Add';
+        addBtn.onclick = () => addSongToPlaylist(song.SongID, select.value);
 
-      searchInput.addEventListener('input', filterSongs);
-      searchType.addEventListener('change', filterSongs);
+        controlsDiv.appendChild(select);
+        controlsDiv.appendChild(addBtn);
 
-    } catch (err) {
-      console.error(err);
-      alert('Failed to load songs or playlists');
+        div.appendChild(leftDiv);
+        div.appendChild(controlsDiv);
+        container.appendChild(div);
+      });
     }
-  }
 
-  function displaySongs(songs) {
-    const container = document.getElementById('songsList');
-    container.innerHTML = ''; // clear previous songs
-
-    const playlists = window.playlists || []; // assuming you loaded playlists somewhere
-
-    songs.forEach(song => {
-      const div = document.createElement('div');
-      div.classList.add('song-item');
-
-      const leftDiv = document.createElement('div');
-      leftDiv.style.display = 'flex';
-      leftDiv.style.alignItems = 'center';
-      leftDiv.style.gap = '10px';
-
-      const titleSpan = document.createElement('span');
-      titleSpan.textContent = song.Title;
-
-      const artistSpan = document.createElement('span');
-      artistSpan.style.color = '#aaa';
-      artistSpan.textContent = `(${song.ArtistName})`;
-
-      const lengthSpan = document.createElement('span');
-      lengthSpan.style.color = '#ff1db9';
-      lengthSpan.textContent = song.Length;
-
-      leftDiv.appendChild(titleSpan);
-      leftDiv.appendChild(artistSpan);
-      leftDiv.appendChild(lengthSpan);
-
-      const controlsDiv = document.createElement('div');
-      controlsDiv.classList.add('controls');
-
-      const select = document.createElement('select');
-      playlists.forEach(pl => {
-        const option = document.createElement('option');
-        option.value = pl.PlaylistID;
-        option.textContent = pl.PlaylistName;
-        select.appendChild(option);
-      });
-
-      const addBtn = document.createElement('button');
-      addBtn.textContent = 'Add';
-      addBtn.onclick = () => addSongToPlaylist(song.SongID, select.value);
-
-      controlsDiv.appendChild(select);
-      controlsDiv.appendChild(addBtn);
-
-      div.appendChild(leftDiv);
-      div.appendChild(controlsDiv);
-      container.appendChild(div);
-    });
-  }
-
-  // Initial load
-  window.addEventListener('DOMContentLoaded', () => {
-    loadAllSongs();
-  });
-
-
-
-  // Create playlist
-  async function createPlaylist() {
-    const name = document.getElementById('playlistName').value.trim();
-    if (!name) return alert('Please enter a playlist name');
-
-    try {
-      const res = await fetch('http://localhost:3000/api/playlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ name })
-      });
-
-      const text = await res.text();
-      console.log('Raw response:', text);
-
-      let result;
+    async function loadUserPlaylists() {
       try {
-        result = JSON.parse(text);
-      } catch (err) {
-        console.error('Failed to parse JSON:', err);
-        alert('Server returned invalid JSON. Check console.');
-        return;
-      }
+        const res = await fetch('http://localhost:3000/api/playlist', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to fetch playlists');
 
-      if (res.ok) {
-        alert(result.message);
-        loadUserPlaylists(); // reload playlists
-      } else {
-        alert(result.error || 'Failed to create playlist');
-      }
+        const playlists = await res.json();
+        window.playlists = playlists;
 
-    } catch (err) {
-      console.error(err);
-      alert('Error connecting to server');
-    }
+        const container = document.getElementById('playlistsContainer');
+        container.innerHTML = '<h2>Your Playlists</h2>';
 
-    loadUserPlaylists();
-    location.reload();
-  }
+        playlists.forEach(pl => {
+          const date = new Date(pl.DateCreated);
+          const formattedDate = date.toISOString().split('T')[0];
 
-  // Load user's playlists
-  async function loadUserPlaylists() {
-    try {
-      // Fetch playlists in JSON
-      const res = await fetch('http://localhost:3000/api/playlist', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (!res.ok) throw new Error('Failed to fetch playlists');
-      const playlists = await res.json();
-
-      const container = document.getElementById('playlistsContainer');
-      container.innerHTML = '<h2>Your Playlists</h2>';
-
-      playlists.forEach(pl => {
-        const date = new Date(pl.DateCreated); // convert string to Date object
-        const formattedDate = date.toISOString().split('T')[0]; // get YYYY-MM-DD
-
-        const div = document.createElement('div');
-        div.classList.add('playlist');
-        div.innerHTML = `
+          const div = document.createElement('div');
+          div.classList.add('playlist');
+          div.innerHTML = `
         <h3>${pl.PlaylistName}  |   Created on: ${formattedDate}</h3>
         <button onclick="viewPlaylist(${pl.PlaylistID})">View Songs</button>
         <button onclick="deletePlaylist(${pl.PlaylistID})">Delete</button>
-    `;
-        container.appendChild(div);
-      });
+      `;
+          container.appendChild(div);
+        });
 
-
-    } catch (err) {
-      console.error(err);
-      alert('Failed to load playlists');
+        displaySongs(window.songData);
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load playlists');
+      }
     }
-  }
 
+    async function createPlaylist() {
+      const name = document.getElementById('playlistName').value.trim();
+      if (!name) return alert('Please enter a playlist name');
 
-  // Delete playlist
-  async function deletePlaylist(id) {
-    if (!confirm('Delete this playlist?')) return;
-    try {
-      const res = await fetch(`http://localhost:3000/api/playlist/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const text = await res.text();
-      console.log('Delete response:', text);
-      loadUserPlaylists();
-    } catch (err) {
-      console.error(err);
+      try {
+        const res = await fetch('http://localhost:3000/api/playlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ name })
+        });
+
+        const text = await res.text();
+        let result;
+        try { result = JSON.parse(text); } catch {}
+        if (res.ok) {
+          alert(result.message);
+          await loadUserPlaylists();
+        } else {
+          alert(result?.error || 'Failed to create playlist');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to server');
+      }
     }
-    location.reload();
-  }
 
-  // Add song to a playlist (for simplicity, adds to first playlist)
-  async function addSongToPlaylist(songId, playlistId) {
-    try {
-      const res = await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ songId })
-      });
+    async function deletePlaylist(id) {
+      if (!confirm('Delete this playlist?')) return;
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlist/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        await res.text();
+        await loadUserPlaylists();
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-      const text = await res.text();
-      console.log('Add song response:', text);
+    async function addSongToPlaylist(songId, playlistId) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ songId })
+        });
 
-      if (res.ok) {
-        alert('Song added to playlist!');
+        const text = await res.text();
+        if (res.ok) {
+          alert('Song added to playlist!');
 
-        // If playlist is currently open, append the new song to its list
-        const playlistDiv = Array.from(document.querySelectorAll('.playlist'))
-                .find(div => div.querySelector(`button[onclick*="viewPlaylist(${playlistId})"]`));
+          // Check if playlist is open
+          const playlistDiv = Array.from(document.querySelectorAll('.playlist'))
+                  .find(div => div.querySelector(`button[onclick*="viewPlaylist(${playlistId})"]`));
 
-        if (playlistDiv) {
-          let ul = playlistDiv.querySelector('.playlist-songs');
+          if (playlistDiv) {
+            const ul = playlistDiv.querySelector('.playlist-songs');
+            if (ul) {
+              // Find song info from global songData
+              const song = window.songData.find(s => s.SongID === songId);
+              if (song) {
+                const li = document.createElement('li');
+                li.classList.add('song-item');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.alignItems = 'center';
+                li.style.marginBottom = '5px';
+                li.style.padding = '5px 10px';
+                li.style.backgroundColor = '#1f1f1f';
+                li.style.borderRadius = '5px';
+                li.style.color = '#fff';
 
-          // If playlist was not open, do nothing (user can click "View Songs" to see it)
-          if (ul) {
-            // Fetch the full song info from all songs list
-            const songDiv = Array.from(document.querySelectorAll('.song-item'))
-                    .find(d => d.querySelector('button').onclick.toString().includes(`addSongToPlaylist(${songId}`));
+                const leftSpan = document.createElement('span');
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = song.Title + ' ';
+                const artistSpan = document.createElement('span');
+                artistSpan.textContent = `(${song.ArtistName}) `;
+                artistSpan.style.color = '#aaa';
+                const lengthSpan = document.createElement('span');
+                lengthSpan.textContent = `[${song.Length}]`;
+                lengthSpan.style.color = '#ff1db9';
 
-            if (songDiv) {
-              const songTitleArtist = songDiv.querySelector('span').textContent;
-              const lengthMatch = songDiv.querySelector('span').getAttribute('data-length') || '';
+                leftSpan.appendChild(titleSpan);
+                leftSpan.appendChild(artistSpan);
+                leftSpan.appendChild(lengthSpan);
 
-              const li = document.createElement('li');
-              li.style.display = 'flex';
-              li.style.justifyContent = 'space-between';
-              li.style.alignItems = 'center';
-              li.style.marginBottom = '5px';
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.style.padding = '5px 10px';
+                deleteBtn.style.border = 'none';
+                deleteBtn.style.borderRadius = '5px';
+                deleteBtn.style.backgroundColor = '#ff1db9';
+                deleteBtn.style.color = '#fff';
+                deleteBtn.style.cursor = 'pointer';
+                deleteBtn.style.transition = 'background 0.3s ease';
+                deleteBtn.onmouseover = () => deleteBtn.style.backgroundColor = '#e01aa5';
+                deleteBtn.onmouseout = () => deleteBtn.style.backgroundColor = '#ff1db9';
+                deleteBtn.onclick = async () => removeSongFromPlaylist(playlistId, songId, li);
 
-              const span = document.createElement('span');
-              span.textContent = `${songTitleArtist} [${lengthMatch}]`;
-
-              const delBtn = document.createElement('button');
-              delBtn.textContent = 'Remove';
-              delBtn.style.backgroundColor = '#ff4d4d';
-              delBtn.style.border = 'none';
-              delBtn.style.color = '#fff';
-              delBtn.style.padding = '4px 8px';
-              delBtn.style.borderRadius = '4px';
-              delBtn.style.cursor = 'pointer';
-              delBtn.onclick = () => removeSongFromPlaylist(playlistId, songId, li);
-
-              li.appendChild(span);
-              li.appendChild(delBtn);
-              ul.appendChild(li);
+                li.appendChild(leftSpan);
+                li.appendChild(deleteBtn);
+                ul.appendChild(li);
+              }
             }
           }
+
+        } else {
+          let result; try { result = JSON.parse(text); } catch {}
+          alert(result?.error || 'Failed to add song');
         }
 
-      } else {
-        let result;
-        try { result = JSON.parse(text); } catch {}
-        alert(result?.error || 'Failed to add song');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to add song');
       }
-
-    } catch (err) {
-      console.error(err);
-      alert('Failed to add song');
     }
-  }
 
 
+    async function viewPlaylist(playlistId) {
+      try {
+        const playlistDiv = Array.from(document.querySelectorAll('.playlist'))
+                .find(div => div.querySelector(`button[onclick*="viewPlaylist(${playlistId})"]`));
+        if (!playlistDiv) return;
 
-  // Initial load
-  window.addEventListener('DOMContentLoaded', () => {
-    loadAllSongs();
-    loadUserPlaylists();
-  });
+        const oldSongList = playlistDiv.querySelector('.playlist-songs');
+        if (oldSongList) { oldSongList.remove(); return; }
 
-  async function viewPlaylist(playlistId) {
-    try {
-      // Find the playlist div
-      const playlistDiv = Array.from(document.querySelectorAll('.playlist'))
-              .find(div => div.querySelector(`button[onclick*="viewPlaylist(${playlistId})"]`));
+        const res = await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to fetch playlist songs');
 
-      if (!playlistDiv) return;
+        const songs = await res.json();
+        const ul = document.createElement('ul');
+        ul.classList.add('playlist-songs');
+        ul.style.marginTop = '10px';
+        ul.style.paddingLeft = '20px';
 
-      // Toggle: hide if already shown
-      const oldSongList = playlistDiv.querySelector('.playlist-songs');
-      if (oldSongList) {
-        oldSongList.remove();
-        return;
+        songs.forEach(song => {
+          const li = document.createElement('li');
+          li.classList.add('song-item');
+          li.style.display = 'flex';
+          li.style.justifyContent = 'space-between';
+          li.style.alignItems = 'center';
+          li.style.marginBottom = '5px';
+          li.style.padding = '5px 10px';
+          li.style.backgroundColor = '#1f1f1f';
+          li.style.borderRadius = '5px';
+          li.style.color = '#fff';
+
+          const leftSpan = document.createElement('span');
+          const titleSpan = document.createElement('span');
+          titleSpan.textContent = song.Title + ' ';
+          const artistSpan = document.createElement('span');
+          artistSpan.textContent = `(${song.ArtistName}) `;
+          artistSpan.style.color = '#aaa';
+          const lengthSpan = document.createElement('span');
+          lengthSpan.textContent = `[${song.Length}]`;
+          lengthSpan.style.color = '#ff1db9';
+
+          leftSpan.appendChild(titleSpan);
+          leftSpan.appendChild(artistSpan);
+          leftSpan.appendChild(lengthSpan);
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.style.padding = '5px 10px';
+          deleteBtn.style.border = 'none';
+          deleteBtn.style.borderRadius = '5px';
+          deleteBtn.style.backgroundColor = '#ff1db9';
+          deleteBtn.style.color = '#fff';
+          deleteBtn.style.cursor = 'pointer';
+          deleteBtn.style.transition = 'background 0.3s ease';
+          deleteBtn.onmouseover = () => deleteBtn.style.backgroundColor = '#e01aa5';
+          deleteBtn.onmouseout = () => deleteBtn.style.backgroundColor = '#ff1db9';
+          deleteBtn.onclick = async () => {
+            try {
+              await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs/${song.SongID}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              li.remove();
+            } catch (err) {
+              console.error(err);
+              alert('Failed to remove song');
+            }
+          };
+
+          li.appendChild(leftSpan);
+          li.appendChild(deleteBtn);
+          ul.appendChild(li);
+        });
+
+        playlistDiv.appendChild(ul);
+
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load songs for this playlist');
       }
-
-      // Fetch songs in this playlist
-      const res = await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (!res.ok) throw new Error('Failed to fetch playlist songs');
-
-      const songs = await res.json();
-
-      // Create song list container
-      const ul = document.createElement('ul');
-      ul.classList.add('playlist-songs');
-      ul.style.marginTop = '10px';
-      ul.style.paddingLeft = '20px';
-
-      songs.forEach(song => {
-        const li = document.createElement('li');
-        li.classList.add('song-item');
-        li.style.display = 'flex';
-        li.style.justifyContent = 'space-between';
-        li.style.alignItems = 'center';
-        li.style.marginBottom = '5px';
-        li.style.padding = '5px 10px';
-        li.style.backgroundColor = '#1f1f1f';
-        li.style.borderRadius = '5px';
-        li.style.color = '#fff';
-
-        // Left side: title, artist, length
-        const leftSpan = document.createElement('span');
-
-        const titleSpan = document.createElement('span');
-        titleSpan.textContent = song.Title + ' ';
-
-        const artistSpan = document.createElement('span');
-        artistSpan.textContent = `(${song.ArtistName}) `;
-        artistSpan.style.color = '#aaa';
-
-        const lengthSpan = document.createElement('span');
-        lengthSpan.textContent = `[${song.Length}]`;
-        lengthSpan.style.color = '#ff1db9';
-
-        leftSpan.appendChild(titleSpan);
-        leftSpan.appendChild(artistSpan);
-        leftSpan.appendChild(lengthSpan);
-
-        // Delete button
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.style.padding = '5px 10px';
-        deleteBtn.style.border = 'none';
-        deleteBtn.style.borderRadius = '5px';
-        deleteBtn.style.backgroundColor = '#ff1db9';
-        deleteBtn.style.color = '#fff';
-        deleteBtn.style.cursor = 'pointer';
-        deleteBtn.style.transition = 'background 0.3s ease';
-        deleteBtn.onmouseover = () => deleteBtn.style.backgroundColor = '#e01aa5';
-        deleteBtn.onmouseout = () => deleteBtn.style.backgroundColor = '#ff1db9';
-
-        deleteBtn.onclick = async () => {
-          try {
-            await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs/${song.SongID}`, {
-              method: 'DELETE',
-              headers: { 'Authorization': `Bearer ${token}` }
-            });
-            li.remove(); // remove from UI immediately
-          } catch (err) {
-            console.error(err);
-            alert('Failed to remove song');
-          }
-        };
-
-        li.appendChild(leftSpan);
-        li.appendChild(deleteBtn);
-        ul.appendChild(li);
-      });
-
-
-      playlistDiv.appendChild(ul);
-
-    } catch (err) {
-      console.error(err);
-      alert('Failed to load songs for this playlist');
     }
-  }
 
-  async function removeSongFromPlaylist(playlistId, songId, songElement) {
-    if (!confirm('Remove this song from the playlist?')) return;
-    try {
-      const res = await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs/${songId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      const text = await res.text();
-      console.log('Remove song response:', text);
-
-      if (res.ok) {
-        songElement.remove(); // Remove from DOM
-      } else {
-        let result;
-        try { result = JSON.parse(text); } catch {}
-        alert(result?.error || 'Failed to remove song');
+    async function removeSongFromPlaylist(playlistId, songId, songElement) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs/${songId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const text = await res.text();
+        if (res.ok) songElement.remove();
+        else { let result; try { result = JSON.parse(text); } catch {} alert(result?.error || 'Failed to remove song'); }
+      } catch (err) {
+        console.error(err);
+        alert('Error removing song from playlist');
       }
-
-    } catch (err) {
-      console.error(err);
-      alert('Error removing song from playlist');
     }
-  }
 
-
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadUserPlaylists();
+      await loadAllSongs();
+    });
 
   </script>
-
 </body>
 </html>

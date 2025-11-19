@@ -6,13 +6,50 @@
     <link rel="stylesheet" href="Style.css">
     <style>
         body { background-color: #121212; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #1f1f1f;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .navbar .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff1db9;
+        }
+
+        .nav-links {
+            margin-left: auto; /* push links to right */
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #ff1db9;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            margin-left: 20px;
+        }
+
         .horizontal-scroll {
             display: flex;
             overflow-x: auto;
             gap: 20px;
             padding-bottom: 10px;
-
-            /* Center the cards when possible */
             justify-content: center;
         }
 
@@ -23,33 +60,40 @@
             flex: 0 0 200px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .song-card:hover, .playlist-card:hover, .song-large:hover {
             transform: scale(1.05);
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
+
         .song-info h4, .playlist-info h4 {
             margin-bottom: 10px;
         }
+
         .small-muted {
             color: #aaa;
             font-size: 14px;
         }
+
         .card-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 30px;
+            gap: 20px;
         }
+
         .card-body h3 {
             font-size: 18px;
             text-align: center;
         }
+
         .meta-row {
             display: flex;
             justify-content: space-between;
             font-size: 14px;
             color: #aaa;
         }
+
         .listens-badge {
             background-color: #ff1db9;
             color: #fff;
@@ -57,47 +101,44 @@
             border-radius: 5px;
             font-size: 12px;
         }
+
         .logo a {
             text-decoration: none;
             color: #ff1db9;
         }
+
         .featured p{
             padding-bottom: 15px;
         }
+
         .featured {
-            padding: 40px 20px; /* smaller than 60px previously */
+            padding: 40px 20px;
             text-align: center;
         }
 
         .featured h2 {
             font-size: 36px;
-            margin-bottom: 15px; /* less space under heading */
+            margin-bottom: 15px;
         }
 
         .featured .section-subtitle {
             font-size: 16px;
             color: #aaa;
-            margin-bottom: 20px; /* less space under subtitle */
+            margin-bottom: 20px;
         }
-
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px; /* smaller gap between cards */
-        }
-
     </style>
 </head>
 <body>
 <header class="navbar">
     <div class="logo"><a href="index.html">Songify</a></div>
     <nav class="nav-links">
-        <a href='Index.html' class="active">Home</a>
+        <a href='Index.html'>Home</a>
         <a href='Songs.html'>Songs</a>
         <a href='Artists.html'>Artists</a>
         <a href='Playlists.html'>Playlists</a>
-        <a href='views.html'>Views</a>
+        <a href="musicNews.html">Music News</a>
+        <a href='views.html' class="active">Views</a>
+
     </nav>
     <div class="auth-buttons" id="authButtons">
         <!-- Will be populated by JS -->
