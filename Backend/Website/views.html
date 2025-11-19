@@ -7,7 +7,6 @@
     <style>
         body { background-color: #121212; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-        /* Navbar */
         .navbar {
             display: flex;
             align-items: center;
@@ -141,7 +140,7 @@
 
     </nav>
     <div class="auth-buttons" id="authButtons">
-        <!-- Will be populated by JS -->
+        <!-- Will be populated by JS below-->
     </div>
 </header>
 
@@ -377,7 +376,6 @@
             const labels = Object.keys(artistPlaysMap);
             const data = Object.values(artistPlaysMap);
 
-            // Optionally, sort descending and take top 10 artists
             const sortedIndices = data.map((v, i) => i)
                 .sort((a, b) => data[b] - data[a])
                 .slice(0, 10);

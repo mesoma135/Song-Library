@@ -1,5 +1,5 @@
-create schema SongDB;
-use SongDB;
+
+use songdb;
 
 CREATE TABLE Artist (
 ArtistID INT PRIMARY KEY,
@@ -173,9 +173,6 @@ ALTER TABLE Playlist
 ADD CONSTRAINT playlist_ibfk_1
 FOREIGN KEY (UserID) REFERENCES UserAccount(UserID);
 
-ALTER TABLE Playlist
-MODIFY COLUMN PlaylistID INT NOT NULL AUTO_INCREMENT;
-
 ALTER TABLE UserHistory
 ADD CONSTRAINT userhistory_ibfk_1
 FOREIGN KEY (UserID) REFERENCES UserAccount(UserID);
@@ -211,6 +208,9 @@ ON DELETE CASCADE;
 ALTER TABLE PlaylistSong 
 DROP FOREIGN KEY playlistSong_ibfk_1;
 
+ALTER TABLE Playlist
+MODIFY COLUMN PlaylistID INT NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE Playlist 
 MODIFY PlaylistID INT NOT NULL AUTO_INCREMENT;
 
@@ -225,4 +225,3 @@ CREATE TABLE TokenBlacklist (
     token VARCHAR(500) NOT NULL,
     blacklistedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-select * from useraccount;

@@ -4,23 +4,19 @@
     <meta charset="UTF-8">
     <title>User Profile & Management - Songify</title>
     <style>
-        /* ——— GLOBAL ——— */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #121212; color: #ffffff; line-height: 1.6; }
 
-        /* ——— NAVBAR ——— */
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background-color: #181818; border-bottom: 1px solid #2a2a2a; position: sticky; top: 0; z-index: 10; }
         .logo a { font-size: 24px; font-weight: bold; color: #ff1db9; text-decoration: none; }
         .nav-links a { color: #ffffff; text-decoration: none; margin: 0 15px; transition: color 0.3s ease; }
         .nav-links a:hover, .nav-links a.active { color: #ff1db9; }
 
-        /* ——— CONTAINERS ——— */
         .profile-container, .user-management-container, .banned-users-container {
             width: 60%; margin: 60px auto; background-color: #1f1f1f; padding: 40px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
         .profile-container h2, .user-management-container h2, .banned-users-container h2 { text-align: center; margin-bottom: 20px; font-size: 32px; color: #ff1db9; }
 
-        /* ——— PROFILE ITEM ——— */
         .profile-item { margin: 15px 0; padding: 15px; background-color: #2a2a2a; border-radius: 10px; display: flex; }
         .profile-label { font-weight: bold; color: #ff1db9; width: 120px; }
 
@@ -28,7 +24,6 @@
         .admin { background-color: #ff4444; }
         .user { background-color: #4444ff; }
 
-        /* ——— USER MANAGEMENT / BANNED USERS ROWS ——— */
         .user-row, .banned-row {
             display: flex;
             padding: 12px 0;
@@ -43,13 +38,12 @@
             text-overflow: ellipsis;
         }
 
-        /* column widths */
         .col-username { width: 20%; }
-        .col-email { width: 35%; }      /* wider email column */
+        .col-email { width: 35%; }
         .col-country { width: 15%; }
         .col-role { width: 10%; }
         .col-joined { width: 15%; }
-        .col-action { width: 100px; text-align: right; margin-left:auto; } /* push button far right */
+        .col-action { width: 100px; text-align: right; margin-left:auto; }
 
         button.ban-btn { padding: 6px 12px; border: none; border-radius: 5px; background-color: #ff4444; color: #fff; cursor: pointer; }
         button.ban-btn:disabled { background-color: #555; cursor: not-allowed; }
@@ -61,7 +55,6 @@
 </head>
 <body>
 
-<!-- ——— NAVBAR ——— -->
 <header class="navbar">
     <div class="logo"><a href="index.html">Songify</a></div>
     <nav class="nav-links">
@@ -75,19 +68,16 @@
     </nav>
 </header>
 
-<!-- ——— PROFILE CONTENT ——— -->
 <div class="profile-container">
     <h2>Your Profile</h2>
     <div id="profileContent"></div>
 </div>
 
-<!-- ——— USER MANAGEMENT ——— -->
 <div class="user-management-container" id="userManagementContainer" style="display:none;">
     <h2>User Management</h2>
     <div id="userRowsContainer">Loading users...</div>
 </div>
 
-<!-- ——— BANNED USERS ——— -->
 <div class="banned-users-container" id="bannedUsersContainer" style="display:none;">
     <h2>Banned Users</h2>
     <div id="bannedRowsContainer">Loading banned users...</div>

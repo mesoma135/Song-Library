@@ -87,9 +87,8 @@
             const result = await res.json();
 
             if (res.status === 403) {
-                // Banned user
                 alert(result.error);
-                return; // Stop login
+                return;
             }
 
             if (!res.ok) {
@@ -97,7 +96,6 @@
                 return;
             }
 
-            // Successful login
             localStorage.setItem('token', result.token);
             localStorage.setItem('username', result.username);
             alert('Login successful!');

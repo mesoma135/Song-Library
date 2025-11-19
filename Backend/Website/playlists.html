@@ -98,6 +98,49 @@
       background-color: #2a2a2a;
       color: #fff;
     }
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    .toast {
+      color: white;
+      padding: 12px 18px;
+      margin-top: 10px;
+      border-radius: 6px;
+      font-size: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slide-in 0.4s forwards, fade-out 0.4s 2.5s forwards;
+    }
+
+    .toast-success {
+      background-color: #1db954; /* green */
+    }
+
+    .toast-error {
+      background-color: #e63946; /* red */
+    }
+
+
+
+    @keyframes slide-in {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fade-out {
+      to {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+
 
   </style>
 </head>
@@ -139,6 +182,8 @@
     <div id="songsList"></div>
   </div>
 </div>
+<div id="toast-container"></div>
+
   <script>
     const token = localStorage.getItem('token');
     if (!token) {
@@ -245,12 +290,19 @@
           const div = document.createElement('div');
           div.classList.add('playlist');
           div.innerHTML = `
-    <h3>${pl.PlaylistName}  |   Created on: ${formattedDate}</h3>
-    <button onclick="viewPlaylist(${pl.PlaylistID})">View Songs</button>
-    <button onclick="deletePlaylist(${pl.PlaylistID})">Delete</button>
-    <button onclick="exportPlaylistCSV(${pl.PlaylistID})">Export CSV</button>
-    <button onclick="exportPlaylistPDF(${pl.PlaylistID})">Export PDF</button>
-  `;
+  <h3>${pl.PlaylistName}  |   Created on: ${formattedDate}</h3>
+
+  <button onclick="viewPlaylist(${pl.PlaylistID})">View Songs</button>
+
+  <button onclick="editPlaylistName(${pl.PlaylistID}, '${pl.PlaylistName.replace(/'/g, "\\'")}')">
+    Edit Name
+  </button>
+
+  <button onclick="deletePlaylist(${pl.PlaylistID})">Delete</button>
+  <button onclick="exportPlaylistCSV(${pl.PlaylistID})">Export CSV</button>
+  <button onclick="exportPlaylistPDF(${pl.PlaylistID})">Export PDF</button>
+`;
+
           container.appendChild(div);
         });
 
@@ -279,7 +331,7 @@
         let result;
         try { result = JSON.parse(text); } catch {}
         if (res.ok) {
-          alert(result.message);
+          showToast("Playlist created successfully.", "success")
           await loadUserPlaylists();
         } else {
           alert(result?.error || 'Failed to create playlist');
@@ -299,6 +351,7 @@
         });
         await res.text();
         await loadUserPlaylists();
+        showToast("Playlist deleted successfully.", "success")
       } catch (err) {
         console.error(err);
       }
@@ -317,7 +370,8 @@
 
         const text = await res.text();
         if (res.ok) {
-          alert('Song added to playlist!');
+          showToast("Song added to playlist!", "success");
+
 
           // Check if playlist is open
           const playlistDiv = Array.from(document.querySelectorAll('.playlist'))
@@ -376,12 +430,12 @@
 
         } else {
           let result; try { result = JSON.parse(text); } catch {}
-          alert(result?.error || 'Failed to add song');
+          showToast(result?.error || 'Failed to add song.', "error");
         }
 
       } catch (err) {
         console.error(err);
-        alert('Failed to add song');
+        alert('Failed to add song.');
       }
     }
 
@@ -476,12 +530,16 @@
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const text = await res.text();
-        if (res.ok) songElement.remove();
+        if (res.ok) {
+
+          songElement.remove();
+          alert("TEST")
+        }
         else { let result; try { result = JSON.parse(text); } catch {} alert(result?.error || 'Failed to remove song'); }
       } catch (err) {
         console.error(err);
-        alert('Error removing song from playlist');
       }
+
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
@@ -544,6 +602,56 @@
         alert('Failed to export PDF');
       }
     }
+    async function editPlaylistName(id, oldName) {
+      const newName = prompt("Enter a new playlist name:", oldName);
+      if (!newName || newName.trim() === "") {
+        alert("Playlist name cannot be empty.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlist/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ name: newName })
+        });
+
+        const text = await res.text();
+        let result;
+        try { result = JSON.parse(text); } catch {}
+
+        if (res.ok) {
+          showToast("Name edited successfully.", "success")
+          loadUserPlaylists(); // refresh UI
+        } else {
+          alert(result?.error || "Failed to rename playlist");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error connecting to server");
+      }
+    }
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toast-container");
+
+      const toast = document.createElement("div");
+      toast.classList.add("toast");
+
+      // Apply type class (toast-success, toast-error, toast-warning)
+      toast.classList.add(`toast-${type}`);
+
+      toast.textContent = message;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
 
 
 

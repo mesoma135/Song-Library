@@ -5,7 +5,6 @@
     <title>Songify - Register</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Global Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #121212; color: #ffffff; display: flex; justify-content: center; align-items: center; height: 100vh; }
 
@@ -127,7 +126,6 @@
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Clear previous errors
         document.querySelectorAll('.error').forEach(el => el.textContent = '');
 
         const data = {

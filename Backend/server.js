@@ -14,7 +14,7 @@ app.use(express.json());
 // Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'Website')));
 
-//This part is for testing the db connection
+//testing the db connection
 db.getConnection((err, connection) => {
     if (err) {
       console.log("MySQL failed to connect:", err);

@@ -71,7 +71,7 @@
 </header>
 
 <section class="song-list" id="songList">
-  <!-- Songs will be dynamically inserted here -->
+  <!-- Songs will populate here with the JS below -->
 </section>
 
 <script>
@@ -93,7 +93,7 @@
         grouped[artist].push(song);
       });
 
-      // Render grouped songs (songs already sorted by plays)
+      // Render grouped songs
       Object.keys(grouped).forEach(artist => {
         const artistDiv = document.createElement('div');
         artistDiv.classList.add('artist-section');
