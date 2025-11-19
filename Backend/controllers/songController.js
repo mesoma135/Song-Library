@@ -76,7 +76,7 @@ exports.getRecentSongs = async (req, res) => {
 
 
 
-// GET all songs
+//GET all songs
 exports.getAllSongs = async (req, res) => {
     try {
         const [songs] = await db.promise().query("SELECT * FROM Song");

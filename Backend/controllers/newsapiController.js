@@ -1,5 +1,6 @@
 const axios = require("axios");
 
+//GET music news from external api
 exports.getMusicNews = async (req, res) => {
   try {
     const apiKey = process.env.NEWS_API_KEY;

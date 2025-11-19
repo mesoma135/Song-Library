@@ -7,10 +7,10 @@ const authMiddleware = require('../middleware/authMiddleware');
 //PUT to ban a user
 router.put('/ban/:userId', authMiddleware, allowedRoles("admin"), adminController.banUser);
 
-// Unban a user
+//PUT to Unban a user
 router.put("/unban/:userId", authMiddleware, allowedRoles("admin"), adminController.unbanUser);
 
-// Delete a user
+// DELETE a user
 router.delete("/users/:userId", authMiddleware, allowedRoles("admin"), adminController.deleteUser);
 
 // GET to fetch all banned users

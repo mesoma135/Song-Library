@@ -1,5 +1,7 @@
 const db = require('../config/db');
 
+//THIS WAS UNUSED IN THE FINAL IMPLEMENTATION
+
 exports.logSongPlay = async (req, res) => {
     try {
         const userId = req.user.userId;

@@ -1,5 +1,6 @@
 const db = require('../config/db');
 
+//POST ban user
 exports.banUser = async (req, res) => {
     try {
       await db.promise().query(
@@ -14,7 +15,7 @@ exports.banUser = async (req, res) => {
       res.status(500).json({ error: "Failed to ban user" });
     }
   };
-
+//POST delete user
   exports.deleteUser = async (req, res) => {
     try {
       const userId = req.params.userId;
@@ -26,7 +27,7 @@ exports.banUser = async (req, res) => {
       res.status(500).json({ error: "Failed to delete user" });
     }
   };
-
+//POST unban user
   exports.unbanUser = async (req, res) => {
     try {
       const userId = req.params.userId;
@@ -42,7 +43,7 @@ exports.banUser = async (req, res) => {
       res.status(500).json({ error: "Failed to unban user" });
     }
   };
-
+//GET users with isBanned = 1
 exports.getBannedUsers = async (req, res) => {
   try {
     const [rows] = await db.promise().query(

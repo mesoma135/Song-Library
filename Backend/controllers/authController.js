@@ -80,9 +80,7 @@ exports.login = async (req, res) => {
     }
 };
 
-
-
-
+//POST to logout user and clear token
 exports.logout = async (req, res) => {
     try {
       const authHeader = req.headers.authorization;

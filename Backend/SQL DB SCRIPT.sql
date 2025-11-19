@@ -26,7 +26,10 @@ CREATE TABLE UserAccount (
     UserName VARCHAR(100) NOT NULL,
     Email VARCHAR(100) UNIQUE NOT NULL,
     JoinDate DATE,
-    Password VARCHAR(200) NOT NULL
+    Password VARCHAR(200) NOT NULL,
+    Country VARCHAR(35) NOT NULL,
+    role VARCHAR(15) NOT NULL default 'user',
+    isBanned tinyint(1) NOT NULL default '0'
 );
 
 CREATE TABLE Playlist (
@@ -113,12 +116,12 @@ INSERT INTO Song VALUES
 
 
 INSERT INTO UserAccount VALUES
-(1, 'Najin' , 'najin.seifi@ontariotechu.net', '2023-03-01', 'temp'),
-(2, 'Kaira', 'kaira.subramaniam@ontariotechu.net' , '2022-08-18', 'temp'),
-(3, 'Kyle' , 'Kyle.siwazalian@ontariotechu.net', '2024-12-12', 'temp'),
-(4, 'Mesoma', 'mesoma@ontariotechu.net', '2025-06-01', 'temp'),
-(5, 'Vlad', 'Vlad@ontariotechu.net','2021-06-07', 'temp'),
-(6, 'Colton', 'Colton@ontariotechu.net', '2025-06-20', 'temp');
+(1, 'Admin', 'songify.admin@gmail.com', '2020-01-01', '$2b$10$AQoEf9aKqBjcjw6TraLpp.uJ1a5nsTCiOh.zcHqae6nQSOkDvQhni', 'Canada', 'admin', 0), 
+(2, 'Kaira', 'kaira.subramaniam@ontariotechu.net' , '2022-08-18', 'temp', 'Canada', 'user', 0),
+(3, 'Kyle' , 'Kyle.siwazalian@ontariotechu.net', '2024-12-12', 'temp', 'Poland', 'user', 0),
+(4, 'Mesoma', 'mesoma@ontariotechu.net', '2025-06-01', 'temp', 'Nigeria', 'user', 0),
+(5, 'Najin' , 'najin.seifi@ontariotechu.net', '2023-03-01', 'temp', 'Iran', 'user', 0),
+(6, 'Colton', 'Colton@ontariotechu.net', '2025-06-20', 'temp', 'Ukraine', 'user', 0);
 
  INSERT INTO Playlist VALUES
  (1,2, 'rnb', '2024-04-1'),
@@ -222,6 +225,3 @@ CREATE TABLE TokenBlacklist (
     token VARCHAR(500) NOT NULL,
     blacklistedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
-ALTER TABLE UserAccount ADD COLUMN isBanned BOOLEAN NOT NULL DEFAULT FALSE;
-DESCRIBE UserAccount;

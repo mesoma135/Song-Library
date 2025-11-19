@@ -1,6 +1,6 @@
 const db = require('../config/db');
 
-// Get current logged-in user profile
+//GET current logged-in user profile
 exports.getProfile = async (req, res) => {
     try {
         const [user] = await db.promise().query(
@@ -20,7 +20,7 @@ exports.getProfile = async (req, res) => {
     }
 };
 
-// Get all users (no passwords)
+//GET all users
 exports.getAllUsers = async (req, res) => {
     try {
         const [users] = await db.promise().query(
@@ -35,7 +35,7 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// Ban a user (set isBanned = 1)
+//Ban a user
 exports.banUser = async (req, res) => {
     try {
         const { userId } = req.params;
