@@ -98,13 +98,16 @@
       background-color: #2a2a2a; /* Dark background */
       color: #fff;
     }
-
+    .logo a {
+            text-decoration: none;
+            color: #ff1db9;
+        }
   </style>
 </head>
 <body>
 
 <header class="navbar">
-  <div class="logo">Songify</div>
+  <div class="logo"><a href="Index.html">Songify</a></div>
   <nav class="nav-links">
     <a href="index.html">Home</a>
     <a href="Songs.html">Songs</a>
@@ -322,7 +325,8 @@
         container.appendChild(div);
       });
 
-    } catch (err) {
+    } 
+    catch (err) {
       console.error(err);
       alert('Failed to load playlists');
     }
