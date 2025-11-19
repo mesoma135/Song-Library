@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile - Songify</title>
+
+    <style>
+        /* ——— GLOBAL ——— */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        /* ——— NAVBAR ——— */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: #181818;
+            border-bottom: 1px solid #2a2a2a;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo a {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff1db9;
+            text-decoration: none;   /* remove link underline */
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #ff1db9;
+        }
+
+        /* ——— PROFILE CARD ——— */
+        .profile-container {
+            width: 60%;
+            margin: 60px auto;
+            background-color: #1f1f1f;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .profile-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 32px;
+            color: #ff1db9;
+        }
+
+        .profile-item {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+        }
+
+        .profile-label {
+            font-weight: bold;
+            color: #ff1db9;
+        }
+
+        .role-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .admin {
+            background-color: #ff4444;
+        }
+
+        .user {
+            background-color: #4444ff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ——— NAVBAR ——— -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="index.html">Songify</a>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="Songs.html">Songs</a>
+            <a href="Artists.html">Artists</a>
+            <a href="Playlists.html">Playlists</a>
+            <a href="musicNews.html">News</a>
+            <a href="views.html">Views</a>
+            <a href="profile.html" class="active">Profile</a>
+        </nav>
+    </header>
+
+    <!-- ——— PROFILE CONTENT ——— -->
+    <div class="profile-container">
+        <h2>Your Profile</h2>
+
+        <div id="profileContent">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+
+    <script>
+        async function loadProfile() {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    alert("You must be logged in.");
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                const res = await fetch("http://localhost:3000/api/userprofile/user", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                const data = await res.json();
+                // to format join date
+                const formattedDate = new Date(data.JoinDate).toISOString().split("T")[0];
+                if (!res.ok) {
+                    document.getElementById("profileContent").innerHTML =
+                        `<p style="color:red;">Error loading profile.</p>`;
+                    return;
+                }
+
+                const roleClass = data.role === "admin" ? "admin" : "user";
+
+                document.getElementById("profileContent").innerHTML = `
+                    <div class="profile-item">
+                        <span class="profile-label">Username:</span> ${data.UserName}
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Email:</span> ${data.Email}
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Country:</span> ${data.Country}
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Joined:</span> ${formattedDate}
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Role:</span> 
+                        <span class="role-badge ${roleClass}">${data.role.toUpperCase()}</span>
+                    </div>
+                `;
+            } catch (err) {
+                console.error(err);
+
+                document.getElementById("profileContent").innerHTML =
+                    `<p style="color:red;">Failed to load profile.</p>`;
+            }
+        }
+
+        loadProfile();
+    </script>
+
+</body>
+</html>
