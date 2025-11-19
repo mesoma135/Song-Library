@@ -23,10 +23,10 @@ router.put('/:id', authMiddleware, playlistController.updatePlaylist);
 router.delete('/:id', authMiddleware, playlistController.deletePlaylist);
 
 //Export playlist data to CSV
-router.get("/export/playlists/csv", authMiddleware, playlistController.exportPlaylistsCSV);
+//router.get("/export/playlists/csv", authMiddleware, playlistController.exportPlaylistsCSV);
 
 //Export playlist data to PDF
-router.get("/export/playlists/pdf", authMiddleware, playlistController.exportPlaylistsPDF);
+//router.get("/export/playlists/pdf", authMiddleware, playlistController.exportPlaylistsPDF);
 
 
 

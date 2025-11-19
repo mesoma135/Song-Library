@@ -110,6 +110,9 @@
         <input type="password" name="confirm_password" placeholder="Confirm Password" required>
         <div id="confirmError" class="error"></div>
 
+        <input type="text" name="country" placeholder="Country" required>
+        <div id="countryError" class="error"></div>
+
         <button type="submit">Register</button>
     </form>
 
@@ -131,7 +134,8 @@
             username: form.username.value,
             email: form.email.value,
             password: form.password.value,
-            confirm_password: form.confirm_password.value
+            confirm_password: form.confirm_password.value,
+            country: form.country.value
         };
 
         try {

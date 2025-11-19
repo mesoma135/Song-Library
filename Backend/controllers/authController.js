@@ -1,25 +1,37 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
+const { countries } = require('countries-list');
 const jwt = require('jsonwebtoken');
 
 //POST Registration for new users
 exports.register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, country } = req.body;
+
     try {
-        // Hash password
+        // 1️⃣ Validate country
+        const countryNames = Object.values(countries).map(c => c.name);
+        if (!countryNames.includes(country)) {
+            return res.status(400).json({ error: "Invalid country" });
+        }
+
+        // 2️⃣ Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
-        // User insert
+
+        // 3️⃣ Insert user into database (role and isBanned use defaults)
         const [result] = await db.promise().query(
-            "INSERT INTO UserAccount (UserName, Email, Password, JoinDate) VALUES (?, ?, ?, CURDATE())",
-            [username, email, hashedPassword]
+            "INSERT INTO UserAccount (UserName, Email, Password, JoinDate, Country) VALUES (?, ?, ?, CURDATE(), ?)",
+            [username, email, hashedPassword, country]
         );
+
         res.json({ message: "User registered", userId: result.insertId });
-    } 
+    }
     catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Registration failed" });
+        console.log(err.code, err.sqlMessage);
+        console.log(err);  // <-- check actual MySQL error here
+        res.status(500).json({ error: "Registration failed", details: err });
     }
 };
+
 
 //POST Login for existing users
 exports.login = async (req, res) => {
