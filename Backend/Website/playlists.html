@@ -129,10 +129,23 @@
 
   <div class="all-songs" id="allSongsContainer">
     <h2>All Songs</h2>
-    <p>Select a playlist for each song:</p>
-    <!-- Songs will be inserted here -->
+
+    <div id="searchBar" style="margin-bottom: 15px;">
+      <input type="text" id="songSearch" placeholder="Search songs..."
+             style="padding: 10px; width: 100%; max-width: 300px; border-radius: 5px;
+                  border: 1px solid #000; background-color: #2a2a2a; color: #fff;">
+      <select id="searchType"
+              style="padding: 10px; border-radius: 5px; background-color:#2a2a2a; color:#fff; border: 1px solid #000; margin-left: 10px;">
+        <option value="title">Search by Title</option>
+        <option value="artist">Search by Artist</option>
+      </select>
+    </div>
+
+    <div id="songsList">
+      <!-- Songs will be inserted here -->
+    </div>
   </div>
-</div>
+
 
   <script>
   const token = localStorage.getItem('token');
@@ -142,77 +155,36 @@
   }
 
   // Fetch all songs from backend
+  // global song data
+  window.songData = [];
+
   async function loadAllSongs() {
     try {
-      // Fetch all songs
       const songsRes = await fetch('http://localhost:3000/api/song/allWithArtist');
-      const songs = await songsRes.json();
+      const allSongs = await songsRes.json();
+      window.songData = allSongs.sort((a,b) => a.Title.localeCompare(b.Title));
 
-      // Fetch user playlists
-      const playlistsRes = await fetch('http://localhost:3000/api/playlist', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const playlists = await playlistsRes.json();
+      displaySongs(window.songData);
 
-      const container = document.getElementById('allSongsContainer');
-      container.innerHTML = '<h2>All Songs</h2>';
+      const searchInput = document.getElementById('songSearch');
+      const searchType = document.getElementById('searchType');
 
-      songs.sort((a,b) => a.Title.localeCompare(b.Title));
-      songs.forEach(song => {
-        // Main container div for the song
-        const div = document.createElement('div');
-        div.classList.add('song-item');
+      // filter songs when typing or changing dropdown
+      const filterSongs = () => {
+        const query = searchInput.value.toLowerCase();
+        const type = searchType.value;
 
-        // Left container: Title + Length
-        const leftDiv = document.createElement('div');
-        leftDiv.style.display = 'flex';
-        leftDiv.style.alignItems = 'center';
-        leftDiv.style.gap = '10px'; // space between title and length
-
-        const titleSpan = document.createElement('span');
-        titleSpan.textContent = song.Title;
-
-        const artistSpan = document.createElement('span');
-        artistSpan.style.color = '#aaa';
-        artistSpan.textContent = `(${song.ArtistName})`;
-
-        const lengthSpan = document.createElement('span');
-        lengthSpan.style.color = '#ff1db9';
-        lengthSpan.textContent = song.Length; // show song length
-
-        leftDiv.appendChild(titleSpan);
-        leftDiv.appendChild(artistSpan);
-        leftDiv.appendChild(lengthSpan);
-
-        // Right container: playlist dropdown + add button
-        const controlsDiv = document.createElement('div');
-        controlsDiv.classList.add('controls');
-
-        const select = document.createElement('select');
-        playlists.forEach(pl => {
-          const option = document.createElement('option');
-          option.value = pl.PlaylistID;
-          option.textContent = pl.PlaylistName;
-          select.appendChild(option);
+        const filtered = window.songData.filter(song => {
+          if (type === 'title') return song.Title.toLowerCase().startsWith(query);
+          if (type === 'artist') return song.ArtistName.toLowerCase().startsWith(query);
+          return true;
         });
 
-        const addBtn = document.createElement('button');
-        addBtn.textContent = "Add";
-        addBtn.onclick = () => addSongToPlaylist(song.SongID, select.value);
+        displaySongs(filtered);
+      };
 
-        controlsDiv.appendChild(select);
-        controlsDiv.appendChild(addBtn);
-
-        // Append left and right containers to main div
-        div.appendChild(leftDiv);
-        div.appendChild(controlsDiv);
-
-        // Add song div to container
-        container.appendChild(div);
-      });
-
-
-
+      searchInput.addEventListener('input', filterSongs);
+      searchType.addEventListener('change', filterSongs);
 
     } catch (err) {
       console.error(err);
@@ -220,7 +192,68 @@
     }
   }
 
-  // Create playlist with Option 1 fix
+  function displaySongs(songs) {
+    const container = document.getElementById('songsList');
+    container.innerHTML = ''; // clear previous songs
+
+    const playlists = window.playlists || []; // assuming you loaded playlists somewhere
+
+    songs.forEach(song => {
+      const div = document.createElement('div');
+      div.classList.add('song-item');
+
+      const leftDiv = document.createElement('div');
+      leftDiv.style.display = 'flex';
+      leftDiv.style.alignItems = 'center';
+      leftDiv.style.gap = '10px';
+
+      const titleSpan = document.createElement('span');
+      titleSpan.textContent = song.Title;
+
+      const artistSpan = document.createElement('span');
+      artistSpan.style.color = '#aaa';
+      artistSpan.textContent = `(${song.ArtistName})`;
+
+      const lengthSpan = document.createElement('span');
+      lengthSpan.style.color = '#ff1db9';
+      lengthSpan.textContent = song.Length;
+
+      leftDiv.appendChild(titleSpan);
+      leftDiv.appendChild(artistSpan);
+      leftDiv.appendChild(lengthSpan);
+
+      const controlsDiv = document.createElement('div');
+      controlsDiv.classList.add('controls');
+
+      const select = document.createElement('select');
+      playlists.forEach(pl => {
+        const option = document.createElement('option');
+        option.value = pl.PlaylistID;
+        option.textContent = pl.PlaylistName;
+        select.appendChild(option);
+      });
+
+      const addBtn = document.createElement('button');
+      addBtn.textContent = 'Add';
+      addBtn.onclick = () => addSongToPlaylist(song.SongID, select.value);
+
+      controlsDiv.appendChild(select);
+      controlsDiv.appendChild(addBtn);
+
+      div.appendChild(leftDiv);
+      div.appendChild(controlsDiv);
+      container.appendChild(div);
+    });
+  }
+
+  // Initial load
+  window.addEventListener('DOMContentLoaded', () => {
+    loadAllSongs();
+  });
+
+
+
+  // Create playlist
   async function createPlaylist() {
     const name = document.getElementById('playlistName').value.trim();
     if (!name) return alert('Please enter a playlist name');
@@ -235,7 +268,7 @@
         body: JSON.stringify({ name })
       });
 
-      const text = await res.text(); // Option 1: raw response
+      const text = await res.text(); 
       console.log('Raw response:', text);
 
       let result;
@@ -266,7 +299,7 @@
   // Load user's playlists
   async function loadUserPlaylists() {
     try {
-      // Fetch playlists in JSON (your playlistController should have a GET /api/playlist endpoint)
+      // Fetch playlists in JSON
       const res = await fetch('http://localhost:3000/api/playlist', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
