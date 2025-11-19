@@ -100,7 +100,7 @@
         window.location.href = "login.html";
     }
 
-    // ——— Load current profile ———
+    //Load current profile
     async function loadProfile() {
         try {
             const res = await fetch("http://localhost:3000/api/userprofile/user", { headers: { "Authorization": `Bearer ${token}` } });
@@ -132,7 +132,7 @@
         }
     }
 
-    // ——— Load all users ———
+    // Loading all users
     async function loadAllUsers() {
         try {
             const res = await fetch("http://localhost:3000/api/userprofile/allUsers", { headers: { "Authorization": `Bearer ${token}` } });
@@ -162,7 +162,7 @@
         }
     }
 
-    // ——— Load banned users ———
+    //Loading banned users
     async function loadBannedUsers() {
         try {
             const res = await fetch("http://localhost:3000/api/userprofile/allUsers", { headers: { "Authorization": `Bearer ${token}` } });
@@ -192,7 +192,7 @@
         }
     }
 
-    // ——— Ban / Unban functions ———
+    //Ban / Unban functions
     async function banUser(userId) {
         if(!confirm("Are you sure you want to ban this user?")) return;
         try {
@@ -217,7 +217,7 @@
         } catch(err) { console.error(err); alert("Error unbanning user"); }
     }
 
-    // ——— Initialize ———
+    //Initialize
     window.addEventListener('DOMContentLoaded', loadProfile);
 </script>
 </body>
