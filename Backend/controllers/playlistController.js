@@ -96,4 +96,107 @@ exports.getRecentPlaylists = async (req, res) => {
     }
 };
 
+const json2csv = require('json2csv').parse; // if you don't have it, install: npm i json2csv
+const PDFDocument = require('pdfkit');      // if you don't have it, install: npm i pdfkit
+
+// Export a single playlist to CSV
+exports.exportPlaylistCSV = async (req, res) => {
+    try {
+        const playlistId = req.params.playlistId;
+
+        // Get playlist name
+        const [playlistRows] = await db.promise().query(
+            "SELECT PlaylistName FROM Playlist WHERE PlaylistID = ?", [playlistId]
+        );
+        if (playlistRows.length === 0) return res.status(404).json({ error: "Playlist not found" });
+
+        const playlistName = playlistRows[0].PlaylistName;
+
+        // Fetch songs
+        const [rows] = await db.promise().query(`
+            SELECT s.Title, s.Genre, s.Length, s.ReleaseDate, a.Name AS Artist
+            FROM PlaylistSong ps
+                     JOIN Song s ON ps.SongID = s.SongID
+                     JOIN Artist a ON s.ArtistID = a.ArtistID
+            WHERE ps.PlaylistID = ?
+        `, [playlistId]);
+
+        if (rows.length === 0) return res.status(404).json({ error: "No songs in this playlist" });
+
+        const formattedRows = rows.map(r => ({
+            Title: r.Title,
+            Artist: r.Artist,
+            Genre: r.Genre,
+            Length: r.Length,
+            ReleaseDate: r.ReleaseDate.toISOString().split('T')[0]
+        }));
+
+        const json2csv = require('json2csv').parse;
+        const csv = json2csv(formattedRows);
+
+        res.header('Content-Type', 'text/csv');
+        const safeName = playlistName.replace(/\s+/g, '_');
+        res.attachment(`${safeName}.csv`);
+        res.send(csv);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to export CSV", details: err });
+    }
+};
+
+
+// Export a single playlist to PDF
+exports.exportPlaylistPDF = async (req, res) => {
+    try {
+        const playlistId = req.params.playlistId;
+
+        // Get playlist info
+        const [playlistRows] = await db.promise().query(
+            "SELECT PlaylistName FROM Playlist WHERE PlaylistID = ?", [playlistId]
+        );
+        if (playlistRows.length === 0) return res.status(404).json({ error: "Playlist not found" });
+
+        const playlistName = playlistRows[0].PlaylistName;
+
+        // Fetch songs
+        const [songRows] = await db.promise().query(`
+            SELECT s.Title, s.Genre, s.Length, s.ReleaseDate, a.Name AS Artist
+            FROM PlaylistSong ps
+                     JOIN Song s ON ps.SongID = s.SongID
+                     JOIN Artist a ON s.ArtistID = a.ArtistID
+            WHERE ps.PlaylistID = ?
+        `, [playlistId]);
+
+        if (songRows.length === 0) return res.status(404).json({ error: "No songs in this playlist" });
+
+        const doc = new PDFDocument();
+        res.setHeader('Content-Type', 'application/pdf');
+
+        // Use playlist name as file name
+        const safeName = playlistName.replace(/\s+/g, '_');
+        res.setHeader('Content-Disposition', `attachment; filename=${safeName}.pdf`);
+        doc.pipe(res);
+
+        // Playlist title at top
+        doc.fontSize(20).text(playlistName, { align: 'center' });
+        doc.moveDown();
+
+        songRows.forEach((song, index) => {
+            const releaseDate = song.ReleaseDate.toISOString().split('T')[0]; // trim time
+            doc.fontSize(12).text(
+                `Title: ${song.Title}\nArtist: ${song.Artist}\nGenre: ${song.Genre}\nLength: ${song.Length}\nRelease Date: ${releaseDate}\n`
+            );
+            doc.moveDown();
+        });
+
+        doc.end();
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to export PDF", details: err });
+    }
+};
+
+
 

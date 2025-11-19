@@ -22,11 +22,12 @@ router.put('/:id', authMiddleware, playlistController.updatePlaylist);
 // DELETE playlist (requires token)
 router.delete('/:id', authMiddleware, playlistController.deletePlaylist);
 
-//Export playlist data to CSV
-//router.get("/export/playlists/csv", authMiddleware, playlistController.exportPlaylistsCSV);
+// Export a single playlist to CSV
+router.get("/export/playlists/csv/:playlistId", authMiddleware, playlistController.exportPlaylistCSV);
 
-//Export playlist data to PDF
-//router.get("/export/playlists/pdf", authMiddleware, playlistController.exportPlaylistsPDF);
+// Export a single playlist to PDF
+router.get("/export/playlists/pdf/:playlistId", authMiddleware, playlistController.exportPlaylistPDF);
+
 
 
 
