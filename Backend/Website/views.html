@@ -238,6 +238,13 @@
             </div>
         </div>
     </section>
+    <section class="featured">
+        <h2>Total Plays by Artist</h2>
+        <p class="section-subtitle">Sum of all plays per artist</p>
+        <div style="width: 90%; max-width: 900px; margin: 0 auto;">
+            <canvas id="totalPlaysByArtistChart"></canvas>
+        </div>
+    </section>
 </main>
 
 <footer>
@@ -349,6 +356,72 @@
         loadRecentSongs();
         loadRecentPlaylists();
         loadMostPlayed();
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    async function loadTotalPlaysByArtistChart() {
+        try {
+            const res = await fetch('http://localhost:3000/api/song/allWithArtist');
+            const songs = await res.json();
+
+            // Aggregate total plays per artist
+            const artistPlaysMap = {};
+            songs.forEach(song => {
+                const artist = song.ArtistName;
+                if (!artistPlaysMap[artist]) artistPlaysMap[artist] = 0;
+                artistPlaysMap[artist] += song.NumPlays;
+            });
+
+            // Convert to arrays for Chart.js
+            const labels = Object.keys(artistPlaysMap);
+            const data = Object.values(artistPlaysMap);
+
+            // Optionally, sort descending and take top 10 artists
+            const sortedIndices = data.map((v, i) => i)
+                .sort((a, b) => data[b] - data[a])
+                .slice(0, 10);
+
+            const topLabels = sortedIndices.map(i => labels[i]);
+            const topData = sortedIndices.map(i => data[i]);
+
+            const ctx = document.getElementById('totalPlaysByArtistChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: topLabels,
+                    datasets: [{
+                        label: 'Total Plays',
+                        data: topData,
+                        backgroundColor: 'rgba(255,29,185,0.7)',
+                        borderColor: 'rgba(255,29,185,1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#fff' }
+                        },
+                        x: {
+                            ticks: { color: '#fff' }
+                        }
+                    }
+                }
+            });
+        } catch (err) {
+            console.error("Failed to load chart data:", err);
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadTotalPlaysByArtistChart();
     });
 </script>
 </body>

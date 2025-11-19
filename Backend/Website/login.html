@@ -87,20 +87,29 @@
 
             const result = await res.json();
 
-            if (res.ok) {
-                // Save token and username
-                localStorage.setItem('token', result.token);
-                localStorage.setItem('username', result.username); // ensure your API returns username
-                alert('Login successful!');
-                window.location.href = 'index.html';
-            } else {
-                alert(result.error || 'Login failed');
+            if (res.status === 403) {
+                // Banned user
+                alert(result.error);
+                return; // Stop login
             }
+
+            if (!res.ok) {
+                alert(result.error || 'Login failed');
+                return;
+            }
+
+            // Successful login
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('username', result.username);
+            alert('Login successful!');
+            window.location.href = 'index.html';
+
         } catch (err) {
             console.error(err);
             alert('Error connecting to server');
         }
     });
+
 </script>
 
 </body>
