@@ -32,6 +32,152 @@
             text-decoration: none;
             color: #ff1db9;
         }
+        .profile-wrapper {
+    position: relative;
+}
+
+.profile-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #ff1db9;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 55px;
+    background: #1f1f1f;
+    width: 160px;
+    border-radius: 10px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+    z-index: 2000;
+}
+
+.dropdown-menu.show-menu {
+    display: flex;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+    padding: 12px;
+    border: none;
+    background: transparent;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background: #ff1db9;
+    color: white;
+}
+
+.profile-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-circle {
+    background-color: #ff1db9;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.profile-circle:hover {
+    transform: scale(1.1);
+}
+
+
+.dropdown-menu {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    background: #1f1f1f;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    overflow: hidden;
+    width: 160px;
+    display: none;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 100;
+}
+
+.dropdown-menu.show-menu {
+    display: block;
+}
+
+
+.dropdown-menu a,
+.dropdown-menu button {
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    color: #fff;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.25s ease;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background: #ff1db9;
+    color: #ffffff;
+    padding-left: 20px;
+}
+
+.dropdown-menu button {
+    font-weight: bold;
+}
+
+.dropdown-menu button {
+    width: 100%;
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    border-radius: 8px;
+}
+
+.dropdown-menu button:hover {
+    background-color: #ff1db9;
+    color: #fff;
+}
     </style>
 </head>
 <body>
@@ -48,7 +194,7 @@
         <a href='views.html'>Views</a>
     </nav>
     <div class="auth-buttons" id="authButtons">
-        <!-- Will be populated by JS -->
+        <!-- JS WILL INSERT DROPDOWN HERE --> 
     </div>
 </header>
 
@@ -92,10 +238,6 @@
 </section>
 
 
-
-
-
-
 <!-- Footer -->
 <footer>
     <div class="footer-content">
@@ -118,30 +260,69 @@
 </footer>
 
 <script>
-    // Update auth buttons dynamically
     const authDiv = document.getElementById('authButtons');
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
 
     if (token && username) {
-        // User is logged in
-        authDiv.innerHTML = `
+    authDiv.innerHTML = `
+        <div class="profile-wrapper">
             <span class="welcome">Welcome, ${username}</span>
-            <button id="logoutBtn">Logout</button>
-        `;
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('username');
-            window.location.reload(); // refresh to show login button
-        });
+
+            <div class="profile-icon">${username.charAt(0).toUpperCase()}</div>
+
+            <div class="dropdown-menu" id="profileDropdown">
+                <a href="profile.html">Profile</a>
+                <a href="history.html">History</a>
+                <button id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    `;
+
+    const wrapper = document.querySelector(".profile-wrapper");
+const menu = document.getElementById("profileDropdown");
+const icon = document.querySelector(".profile-icon");
+
+// Track open state
+let menuOpen = false;
+
+// Open on hover
+wrapper.addEventListener("mouseenter", () => {
+    if (!menuOpen) menu.classList.add("show-menu");
+});
+
+// Close Only if not clicked open
+wrapper.addEventListener("mouseleave", () => {
+    if (!menuOpen) menu.classList.remove("show-menu");
+});
+
+// Clicking the icon toggles
+icon.addEventListener("click", () => {
+    menuOpen = !menuOpen;
+
+    if (menuOpen) {
+        menu.classList.add("show-menu");
     } else {
-        // User is not logged in
+        menu.classList.remove("show-menu");
+    }
+});
+
+// Logout button
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.location.reload();
+});
+}
+else {
+        // Not logged in
         authDiv.innerHTML = `
             <button class="login-btn" onclick="window.location.href='login.html'">Login</button>
         `;
     }
 
-    // Load Top Artists
+
+    // Load Top Artists (unchanged)
     async function loadTopArtistNames() {
         try {
             const res = await fetch('http://localhost:3000/api/artist/top');
