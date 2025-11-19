@@ -138,7 +138,7 @@
 
     <div id="songsList"></div>
   </div>
-
+</div>
   <script>
     const token = localStorage.getItem('token');
     if (!token) {
@@ -245,10 +245,12 @@
           const div = document.createElement('div');
           div.classList.add('playlist');
           div.innerHTML = `
-        <h3>${pl.PlaylistName}  |   Created on: ${formattedDate}</h3>
-        <button onclick="viewPlaylist(${pl.PlaylistID})">View Songs</button>
-        <button onclick="deletePlaylist(${pl.PlaylistID})">Delete</button>
-      `;
+    <h3>${pl.PlaylistName}  |   Created on: ${formattedDate}</h3>
+    <button onclick="viewPlaylist(${pl.PlaylistID})">View Songs</button>
+    <button onclick="deletePlaylist(${pl.PlaylistID})">Delete</button>
+    <button onclick="exportPlaylistCSV(${pl.PlaylistID})">Export CSV</button>
+    <button onclick="exportPlaylistPDF(${pl.PlaylistID})">Export PDF</button>
+  `;
           container.appendChild(div);
         });
 
@@ -486,6 +488,65 @@
       await loadUserPlaylists();
       await loadAllSongs();
     });
+
+    async function exportPlaylistCSV(playlistId) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlist/export/playlists/csv/${playlistId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to export CSV');
+
+        const blob = await res.blob();
+        const contentDisposition = res.headers.get('Content-Disposition');
+        let filename = `playlist_${playlistId}.csv`; // fallback
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="?([^"]+)"?/);
+          if (match) filename = match[1];
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+      } catch (err) {
+        console.error(err);
+        alert('Failed to export CSV');
+      }
+    }
+
+    async function exportPlaylistPDF(playlistId) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlist/export/playlists/pdf/${playlistId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to export PDF');
+
+        const blob = await res.blob();
+        const contentDisposition = res.headers.get('Content-Disposition');
+        let filename = `playlist_${playlistId}.pdf`; // fallback
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="?([^"]+)"?/);
+          if (match) filename = match[1];
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+      } catch (err) {
+        console.error(err);
+        alert('Failed to export PDF');
+      }
+    }
+
+
+
 
   </script>
 </body>
