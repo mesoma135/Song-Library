@@ -1,4 +1,4 @@
-Create schema SongDB
+create schema SongDB;
 use SongDB;
 
 CREATE TABLE Artist (
@@ -225,3 +225,4 @@ CREATE TABLE TokenBlacklist (
     token VARCHAR(500) NOT NULL,
     blacklistedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+select * from useraccount;

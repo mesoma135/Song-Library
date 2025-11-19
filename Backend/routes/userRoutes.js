@@ -5,13 +5,13 @@ const userController = require('../controllers/userController');
 
 router.get('/user', authMiddleware, userController.getProfile);
 
-// Get all users (requires auth, optionally admin only)
+//GET all users (requires auth, optionally admin only)
 router.get('/allUsers',  userController.getAllUsers);
 
-// Ban a user
+//POST to ban a user
 router.post('/ban/:userId', userController.banUser);
 
-// Unban a user
+//POST to unban a user
 router.post('/unban/:userId', authMiddleware, userController.unbanUser);
 
 

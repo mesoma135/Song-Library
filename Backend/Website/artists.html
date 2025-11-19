@@ -70,18 +70,17 @@
 
 <section class="artist-list" id="artistList">
   <h2>All Artists</h2>
-  <!-- Artists will be populated here dynamically -->
+  <!-- Artists will populate with the JS below -->
 </section>
 
 <script>
   async function loadArtists() {
     try {
-      const res = await fetch('http://localhost:3000/api/artist/all'); // <-- API endpoint for all artists
+      const res = await fetch('http://localhost:3000/api/artist/all');
       const artists = await res.json();
 
       const container = document.getElementById('artistList');
 
-      // Sort by TotalPlays descending
       artists.sort((a, b) => b.TotalPlays - a.TotalPlays);
 
       artists.forEach((artist, index) => {

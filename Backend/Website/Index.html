@@ -194,7 +194,7 @@
         <a href='views.html'>Views</a>
     </nav>
     <div class="auth-buttons" id="authButtons">
-        <!-- JS WILL INSERT DROPDOWN HERE --> 
+        <!-- JS WILL INSERT DROPDOWN HERE -->
     </div>
 </header>
 
@@ -314,14 +314,14 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 }
 else {
-        // Not logged in
+        // When not logged in, the button switches to login instead
         authDiv.innerHTML = `
             <button class="login-btn" onclick="window.location.href='login.html'">Login</button>
         `;
     }
 
 
-    // Load Top Artists (unchanged)
+    // Load Top Artists 
     async function loadTopArtistNames() {
         try {
             const res = await fetch('http://localhost:3000/api/artist/top');
