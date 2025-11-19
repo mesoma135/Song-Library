@@ -1,5 +1,5 @@
-
-use songdb;
+Create schema SongDB
+use SongDB;
 
 CREATE TABLE Artist (
 ArtistID INT PRIMARY KEY,
