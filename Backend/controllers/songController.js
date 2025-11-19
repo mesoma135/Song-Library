@@ -58,6 +58,24 @@ exports.getAllWithArtist = async (req, res) => {
     }
 };
 
+//GET recent songs
+exports.getRecentSongs = async (req, res) => {
+    try {
+        const [songs] = await db.promise().query(`
+            SELECT s.SongID, s.Title, a.Name AS ArtistName, s.ReleaseDate
+            FROM Song s
+                     JOIN Artist a ON s.ArtistID = a.ArtistID
+            ORDER BY s.ReleaseDate DESC
+                LIMIT 5
+        `);
+        res.json(songs);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch recent songs", details: err });
+    }
+};
+
+
+
 // GET all songs
 exports.getAllSongs = async (req, res) => {
     try {

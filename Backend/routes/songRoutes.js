@@ -11,6 +11,10 @@ router.get('/artist-name/:name', songController.getSongsByArtistName);
 //GET all songs with artist (for songs page)
 router.get('/allWithArtist', songController.getAllWithArtist);
 
+//GET recent songs
+router.get('/recent', songController.getRecentSongs);
+
+
 //GET all songs
 router.get('/', songController.getAllSongs);
 

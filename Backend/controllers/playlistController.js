@@ -81,6 +81,23 @@ exports.deletePlaylist = async (req, res) => {
     }
 };
 
+// GET recent playlists (public)
+exports.getRecentPlaylists = async (req, res) => {
+    try {
+        const [rows] = await db.promise().query(`
+            SELECT p.PlaylistID, p.PlaylistName, u.UserName AS CreatorName, p.DateCreated
+            FROM Playlist p
+            JOIN UserAccount u ON p.UserID = u.UserID
+            ORDER BY p.DateCreated DESC
+            LIMIT 5
+        `);
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch recent playlists", details: err });
+    }
+};
+
 exports.exportPlaylistsCSV = async (req, res) => {
     try {
       const [rows] = await db.promise().query(

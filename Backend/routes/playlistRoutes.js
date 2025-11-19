@@ -5,11 +5,13 @@ const authMiddleware = require('../middleware/authMiddleware');
 const { createPlaylistValidation } = require('../validators/playlistValidator');
 const validate = require('../middleware/validatorMiddleware');
 
+// Public route for recent playlists
+router.get('/recent', playlistController.getRecentPlaylists);
+
 // CREATE playlist (requires token)
 router.post('/', authMiddleware, createPlaylistValidation, validate, playlistController.createPlaylist);
 
 router.get('/', authMiddleware, playlistController.getUserPlaylists);
-
 
 // GET playlist by ID (requires token)
 router.get('/:id', authMiddleware, playlistController.getPlaylist);

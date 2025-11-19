@@ -2,10 +2,96 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Songify - Views</title>
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        body { background-color: #121212; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .horizontal-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding-bottom: 10px;
+
+            /* Center the cards when possible */
+            justify-content: center;
+        }
+
+        .song-card, .playlist-card, .song-large {
+            background-color: #1f1f1f;
+            border-radius: 15px;
+            padding: 15px;
+            flex: 0 0 200px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .song-card:hover, .playlist-card:hover, .song-large:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .song-info h4, .playlist-info h4 {
+            margin-bottom: 10px;
+        }
+        .small-muted {
+            color: #aaa;
+            font-size: 14px;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+        .card-body h3 {
+            font-size: 18px;
+            text-align: center;
+        }
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #aaa;
+        }
+        .listens-badge {
+            background-color: #ff1db9;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .logo a {
+            text-decoration: none;
+            color: #ff1db9;
+        }
+        .featured p{
+            padding-bottom: 15px;
+        }
+        .featured {
+            padding: 40px 20px; /* smaller than 60px previously */
+            text-align: center;
+        }
+
+        .featured h2 {
+            font-size: 36px;
+            margin-bottom: 15px; /* less space under heading */
+        }
+
+        .featured .section-subtitle {
+            font-size: 16px;
+            color: #aaa;
+            margin-bottom: 20px; /* less space under subtitle */
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* smaller gap between cards */
+        }
+
+    </style>
 </head>
+<body>
 <header class="navbar">
-    <div class="logo"><a href="index.html">Songify</div>
+    <div class="logo"><a href="index.html">Songify</a></div>
     <nav class="nav-links">
         <a href='Index.html' class="active">Home</a>
         <a href='Songs.html'>Songs</a>
@@ -17,118 +103,102 @@
         <!-- Will be populated by JS -->
     </div>
 </header>
-<body>
-<section class="featured">
-    <h2>Recent Songs</h2>
-    <p class="section-subtitle">Latest releases — fresh tracks added to Songify</p>
-    <div class="horizontal-scroll">
-        <div class="song-card">
-            <div class="song-info">
-                <h4>New Track A</h4>
-                <span class="small-muted">Artist One </span>
-            </div>
-        </div>
 
-        <div class="song-card">
-
-            <div class="song-info">
-                <h4>New Track B</h4>
-                <span class="small-muted">Artist Two </span>
-            </div>
-        </div>
-
-        <div class="song-card">
-
-            <div class="song-info">
-                <h4>New Track C</h4>
-                <span class="small-muted">Artist Three ·</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="featured">
-    <h2>Recent Playlist Adds</h2>
-    <p class="section-subtitle">Playlists recently created or updated</p>
-    <div class="horizontal-scroll">
-        <div class="playlist-card">
-
-            <div class="playlist-info">
-                <h4>0</h4>
-                <span class="small-muted">Added by X</span>
-            </div>
-
-        </div>
-
-        <div class="playlist-card">
-            <div class="playlist-info">
-                <h4>1</h4>
-                <span class="small-muted">Added by X</span>
-            </div>
-
-        </div>
-
-        <div class="playlist-card">
-
-            <div class="playlist-info">
-                <h4>2</h4>
-                <span class="small-muted">Added by X</span>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-
-<section class="featured">
-    <h2>Most Played Songs</h2>
-    <p class="section-subtitle">Tracks with the highest play counts</p>
-    <div class="card-container most-played">
-        <div class="card song-large">
-
-            <div class="card-body">
-                <h3>Hit Single A</h3>
-                <div class="meta-row">
+<main>
+    <section class="featured">
+        <h2>Recent Songs</h2>
+        <p class="section-subtitle">Latest releases</p>
+        <div class="horizontal-scroll">
+            <div class="song-card">
+                <div class="song-info">
+                    <h4>New Track A</h4>
                     <span class="small-muted">Artist One</span>
-                    <span class="listens-badge">listens</span>
                 </div>
             </div>
-        </div>
-
-        <div class="card song-large">
-
-            <div class="card-body">
-                <h3>Hit Single B</h3>
-                <div class="meta-row">
+            <div class="song-card">
+                <div class="song-info">
+                    <h4>New Track B</h4>
                     <span class="small-muted">Artist Two</span>
-                    <span class="listens-badge">listens</span>
                 </div>
             </div>
-        </div>
-
-        <div class="card song-large">
-
-            <div class="card-body">
-                <h3>Hit Single C</h3>
-                <div class="meta-row">
+            <div class="song-card">
+                <div class="song-info">
+                    <h4>New Track C</h4>
                     <span class="small-muted">Artist Three</span>
-                    <span class="listens-badge">listens</span>
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="card song-large">
-
-            <div class="card-body">
-                <h3>Hit Single D</h3>
-                <div class="meta-row">
-                    <span class="small-muted">Artist Four</span>
-                    <span class="listens-badge">listens</span>
+    <section class="featured">
+        <h2>Recent Playlist Adds</h2>
+        <p class="section-subtitle">Playlists recently created</p>
+        <div class="horizontal-scroll">
+            <div class="playlist-card">
+                <div class="playlist-info">
+                    <h4>0</h4>
+                    <span class="small-muted">Added by X</span>
+                </div>
+            </div>
+            <div class="playlist-card">
+                <div class="playlist-info">
+                    <h4>1</h4>
+                    <span class="small-muted">Added by X</span>
+                </div>
+            </div>
+            <div class="playlist-card">
+                <div class="playlist-info">
+                    <h4>2</h4>
+                    <span class="small-muted">Added by X</span>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+
+    <section class="featured">
+        <h2>Most Played Songs</h2>
+        <p class="section-subtitle">Tracks with the highest play counts</p>
+        <div class="card-container most-played">
+            <div class="card song-large">
+                <div class="card-body">
+                    <h3>Hit Single A</h3>
+                    <div class="meta-row">
+                        <span class="small-muted">Artist One</span>
+                        <span class="listens-badge">listens</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card song-large">
+                <div class="card-body">
+                    <h3>Hit Single B</h3>
+                    <div class="meta-row">
+                        <span class="small-muted">Artist Two</span>
+                        <span class="listens-badge">listens</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card song-large">
+                <div class="card-body">
+                    <h3>Hit Single C</h3>
+                    <div class="meta-row">
+                        <span class="small-muted">Artist Three</span>
+                        <span class="listens-badge">listens</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card song-large">
+                <div class="card-body">
+                    <h3>Hit Single D</h3>
+                    <div class="meta-row">
+                        <span class="small-muted">Artist Four</span>
+                        <span class="listens-badge">listens</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
 <footer>
     <div class="footer-content">
         <div class="footer-left">
@@ -145,6 +215,102 @@
             </ul>
         </div>
     </div>
+    <div class="footer-bottom">
+        &copy; 2025 Songify. All rights reserved.
+    </div>
 </footer>
+<script>
+    async function loadRecentPlaylists() {
+        try {
+            const res = await fetch('http://localhost:3000/api/playlist/recent');
+            const playlists = await res.json();
+
+
+            const container = document.querySelector('section.featured:nth-of-type(2) .horizontal-scroll');
+            container.innerHTML = ''; // clear placeholders
+
+            playlists.forEach(pl => {
+                const div = document.createElement('div');
+                div.classList.add('playlist-card');
+
+                div.innerHTML = `
+                <div class="playlist-info">
+                    <h4>${pl.PlaylistName}</h4>
+                    <span class="small-muted">Added by ${pl.CreatorName}</span>
+                </div>
+            `;
+                container.appendChild(div);
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+
+
+    async function loadRecentSongs() {
+        try {
+            const res = await fetch('http://localhost:3000/api/song/recent');
+            const songs = await res.json();
+
+            const container = document.querySelector('section.featured:nth-of-type(1) .horizontal-scroll');
+            container.innerHTML = ''; // clear placeholders
+
+            songs.forEach(song => {
+                const div = document.createElement('div');
+                div.classList.add('song-card');
+
+                div.innerHTML = `
+                        <div class="song-info">
+                            <h4>${song.Title}</h4>
+                            <span class="small-muted">${song.ArtistName}</span>
+                        </div>
+                    `;
+                container.appendChild(div);
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function loadMostPlayed() {
+        try {
+            const res = await fetch('http://localhost:3000/api/song/allWithArtist');
+            const songs = await res.json();
+
+            const sorted = songs.sort((a, b) => b.NumPlays - a.NumPlays).slice(0, 5);
+
+            const container = document.querySelector('section.featured:nth-of-type(3) .card-container');
+            container.innerHTML = '';
+
+            sorted.forEach(song => {
+                const div = document.createElement('div');
+                div.classList.add('card', 'song-large');
+
+                div.innerHTML = `
+                <div class="card-body">
+                    <h3>${song.Title}</h3>
+                    <div class="meta-row">
+                        <span class="small-muted">${song.ArtistName}</span>
+                        <span class="listens-badge">${song.NumPlays} listens</span>
+                    </div>
+                </div>
+            `;
+                container.appendChild(div);
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Load all sections after DOM
+    window.addEventListener('DOMContentLoaded', () => {
+        loadRecentSongs();
+        loadRecentPlaylists();
+        loadMostPlayed();
+    });
+</script>
 </body>
+
+
 </html>
