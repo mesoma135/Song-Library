@@ -271,6 +271,8 @@
     }
 
     async function loadUserPlaylists() {
+    console.log("Token being sent:", token);
+
       try {
         const res = await fetch('http://localhost:3000/api/playlist', {
           headers: { 'Authorization': `Bearer ${token}` }

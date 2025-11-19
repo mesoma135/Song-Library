@@ -8,6 +8,9 @@ const validate = require('../middleware/validatorMiddleware');
 //GET to fetch recent playlists
 router.get('/recent', playlistController.getRecentPlaylists);
 
+//GET to fetch all playlists for the authenticated user (requires token)
+router.get('/', authMiddleware, playlistController.getUserPlaylists);
+
 //POST to create playlist (requires token)
 router.post('/', authMiddleware, createPlaylistValidation, validate, playlistController.createPlaylist);
 
