@@ -554,8 +554,9 @@
         const res = await fetch(`http://localhost:3000/api/playlist/export/playlists/csv/${playlistId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!res.ok) throw new Error('Failed to export CSV');
-
+        if (!res.ok) {
+          throw new Error('Failed to export CSV');
+        }
         const blob = await res.blob();
         const contentDisposition = res.headers.get('Content-Disposition');
         let filename = `playlist_${playlistId}.csv`; // fallback
@@ -573,7 +574,7 @@
 
       } catch (err) {
         console.error(err);
-        alert('Failed to export CSV');
+        showToast("Failed to export.", "error");
       }
     }
 
@@ -601,13 +602,12 @@
 
       } catch (err) {
         console.error(err);
-        alert('Failed to export PDF');
+        showToast("Failed to export.", "error");
       }
     }
     async function editPlaylistName(id, oldName) {
       const newName = prompt("Enter a new playlist name:", oldName);
       if (!newName || newName.trim() === "") {
-        alert("Playlist name cannot be empty.");
         return;
       }
 
