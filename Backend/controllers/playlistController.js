@@ -1,6 +1,6 @@
 const db = require('../config/db');
 
-// CREATE playlist
+//POST create playlist
 exports.createPlaylist = async (req, res) => {
     try {
         const [result] = await db.promise().query(
@@ -11,7 +11,7 @@ exports.createPlaylist = async (req, res) => {
     }
 };
 
-// GET all playlists for user
+//GET all playlists for user
 exports.getUserPlaylists = async (req, res) => {
     try {
         const [rows] = await db.promise().query(
@@ -24,7 +24,7 @@ exports.getUserPlaylists = async (req, res) => {
     }
 };
 
-// GET playlist by ID
+//GET playlist by ID
 exports.getPlaylist = async (req, res) => {
     try {
         const playlistId = req.params.id;
@@ -44,15 +44,14 @@ exports.getPlaylist = async (req, res) => {
     }
 };
 
+//POST update playlist when edited
 exports.updatePlaylist = async (req, res) => {
     try {
-          // Ensure the playlist belongs to the user
         const [check] = await db.promise().query(
             "SELECT * FROM Playlist WHERE PlaylistID = ? AND UserID = ?", [req.params.id, req.user.userId]);
         if (check.length === 0) {
             return res.status(403).json({ error: "Not authorized to update this playlist" });
         }
-        // Update playlist name
         await db.promise().query(
             "UPDATE Playlist SET PlaylistName = ? WHERE PlaylistID = ?", [req.body.name, req.params.id]);
         res.json({ message: "Playlist updated!" });
@@ -61,10 +60,9 @@ exports.updatePlaylist = async (req, res) => {
     }
 };
 
-// DELETE playlist
+//DELETE to remove a playlist
 exports.deletePlaylist = async (req, res) => {
     try {
-        // Ensure the playlist belongs to the user
         const [check] = await db.promise().query(
             "SELECT * FROM Playlist WHERE PlaylistID = ? AND UserID = ?", [req.params.id, req.user.userId]);
         if (check.length === 0) {
@@ -79,7 +77,7 @@ exports.deletePlaylist = async (req, res) => {
     }
 };
 
-// GET recent playlists (public)
+//GET recent playlists (public)
 exports.getRecentPlaylists = async (req, res) => {
     try {
         const [rows] = await db.promise().query(`
@@ -96,15 +94,15 @@ exports.getRecentPlaylists = async (req, res) => {
     }
 };
 
-const json2csv = require('json2csv').parse; // if you don't have it, install: npm i json2csv
-const PDFDocument = require('pdfkit');      // if you don't have it, install: npm i pdfkit
 
-// Export a single playlist to CSV
+const json2csv = require('json2csv').parse;
+const PDFDocument = require('pdfkit');
+
+//GET export a playlist to CSV
 exports.exportPlaylistCSV = async (req, res) => {
     try {
         const playlistId = req.params.playlistId;
 
-        // Get playlist name
         const [playlistRows] = await db.promise().query(
             "SELECT PlaylistName FROM Playlist WHERE PlaylistID = ?", [playlistId]
         );
@@ -112,7 +110,6 @@ exports.exportPlaylistCSV = async (req, res) => {
 
         const playlistName = playlistRows[0].PlaylistName;
 
-        // Fetch songs
         const [rows] = await db.promise().query(`
             SELECT s.Title, s.Genre, s.Length, s.ReleaseDate, a.Name AS Artist
             FROM PlaylistSong ps
@@ -146,12 +143,11 @@ exports.exportPlaylistCSV = async (req, res) => {
 };
 
 
-// Export a single playlist to PDF
+//GET export a playlist to PDF
 exports.exportPlaylistPDF = async (req, res) => {
     try {
         const playlistId = req.params.playlistId;
 
-        // Get playlist info
         const [playlistRows] = await db.promise().query(
             "SELECT PlaylistName FROM Playlist WHERE PlaylistID = ?", [playlistId]
         );
@@ -159,7 +155,6 @@ exports.exportPlaylistPDF = async (req, res) => {
 
         const playlistName = playlistRows[0].PlaylistName;
 
-        // Fetch songs
         const [songRows] = await db.promise().query(`
             SELECT s.Title, s.Genre, s.Length, s.ReleaseDate, a.Name AS Artist
             FROM PlaylistSong ps
@@ -173,12 +168,10 @@ exports.exportPlaylistPDF = async (req, res) => {
         const doc = new PDFDocument();
         res.setHeader('Content-Type', 'application/pdf');
 
-        // Use playlist name as file name
         const safeName = playlistName.replace(/\s+/g, '_');
         res.setHeader('Content-Disposition', `attachment; filename=${safeName}.pdf`);
         doc.pipe(res);
 
-        // Playlist title at top
         doc.fontSize(20).text(playlistName, { align: 'center' });
         doc.moveDown();
 

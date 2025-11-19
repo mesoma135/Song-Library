@@ -4,13 +4,13 @@ const authController = require('../controllers/authController');
 const { registerValidation, loginValidation } = require("../validators/authValidators");
 const validate = require("../middleware/validatorMiddleware");
 
-//new User Registration
+//POST for user Registration
 router.post('/register', registerValidation, validate, authController.register);
 
-//User Login
+//POST for user Login
 router.post('/login', loginValidation, validate, authController.login);
 
-//User Logout with user authentication
+//POST user Logout with user authentication
 router.post('/logout', authController.logout);
 
 module.exports = router;

@@ -2,7 +2,7 @@ const db = require('../config/db');
 const { Parser } = require("json2csv");
 const PDFDocument = require("pdfkit");
 
-//export playlist data to CSV file
+//GET to export playlist data to CSV file
 exports.exportPlaylistsCSV = async (req, res) => {
     try {
       const [rows] = await db.promise().query(
@@ -23,7 +23,7 @@ exports.exportPlaylistsCSV = async (req, res) => {
     }
   };
 
-  //Export playlist data to PDF file
+//GET to export playlist data to PDF
 exports.exportPlaylistsPDF = async (req, res) => {
   try{
     const [rows] = await db.promise().query("SELECT * FROM Playlist WHERE UserID = ?",[req.user.userId]);

@@ -8,10 +8,9 @@ async function verifyOwnership(req) {
     return rows.length > 0;
 }
 
-//ADD a song to a playlist
+//POST add a song to a playlist
 exports.addSongToPlaylist = async (req, res) => {
     try {
-        // Check that playlist belongs to the user
         const ownsPlaylist = await verifyOwnership(req);
         if (!ownsPlaylist) {
             return res.status(403).json({ error: "Not authorized to modify this playlist" });
@@ -26,7 +25,7 @@ exports.addSongToPlaylist = async (req, res) => {
 //DELETE to remove a song from a playlist
 exports.removeSongFromPlaylist = async (req, res) => {
     try {
-        const ownsPlaylist = await verifyOwnership(req); // Check that playlist belongs to the user
+        const ownsPlaylist = await verifyOwnership(req);
         if (!ownsPlaylist) {
             return res.status(403).json({ error: "Not authorized to modify this playlist" });
         }
@@ -43,7 +42,7 @@ exports.removeSongFromPlaylist = async (req, res) => {
 exports.getSongsInPlaylist = async (req, res) => {
     try {
         
-        const ownsPlaylist = await verifyOwnership(req); // Check that playlist belongs to the user
+        const ownsPlaylist = await verifyOwnership(req);
         if (!ownsPlaylist) {
             return res.status(403).json({ error: "Not authorized to view this playlist" });
         }
