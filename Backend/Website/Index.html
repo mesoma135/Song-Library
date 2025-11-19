@@ -321,7 +321,7 @@ else {
     }
 
 
-    // Load Top Artists 
+    // Load Top Artists
     async function loadTopArtistNames() {
         try {
             const res = await fetch('http://localhost:3000/api/artist/top');
@@ -331,7 +331,7 @@ else {
             artists.forEach((artist, index) => {
                 if (cards[index]) {
                     cards[index].querySelector('h3').textContent = artist.Name;
-                    cards[index].querySelector('p').textContent = artist.TotalPlays.toLocaleString() + " plays";
+                    cards[index].querySelector('p').textContent = artist.TotalPlays.toLocaleString() + " Listeners";
                 }
             });
         } catch (err) {
