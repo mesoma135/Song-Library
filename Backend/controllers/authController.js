@@ -8,16 +8,16 @@ exports.register = async (req, res) => {
     const { username, email, password, country } = req.body;
 
     try {
-        // 1️⃣ Validate country
+        // Validate country
         const countryNames = Object.values(countries).map(c => c.name);
         if (!countryNames.includes(country)) {
             return res.status(400).json({ error: "Invalid country" });
         }
 
-        // 2️⃣ Hash password
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // 3️⃣ Insert user into database (role and isBanned use defaults)
+        // Insert user into database (role and isBanned use defaults)
         const [result] = await db.promise().query(
             "INSERT INTO UserAccount (UserName, Email, Password, JoinDate, Country) VALUES (?, ?, ?, CURDATE(), ?)",
             [username, email, hashedPassword, country]
@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
     try {
         // Find user by email
         const [rows] = await db.promise().query(
-            "SELECT UserID, UserName, Email, Password FROM UserAccount WHERE Email = ?",
+            "SELECT UserID, UserName, Email, Password, isBanned FROM UserAccount WHERE Email = ?",
             [email]
         );
 
@@ -48,6 +48,11 @@ exports.login = async (req, res) => {
         }
 
         const user = rows[0];
+
+        // Check if banned
+        if (user.isBanned === 1) {
+            return res.status(403).json({ error: "Your account has been banned. You cannot log in." });
+        }
 
         // Check password
         const isMatch = await bcrypt.compare(password, user.Password);
@@ -62,11 +67,15 @@ exports.login = async (req, res) => {
             { expiresIn: "2h" }
         );
 
-        res.json({ message: "Login successful", token,
+        res.json({
+            message: "Login successful",
+            token,
             username: user.UserName,
-            id: user.UserID});
+            id: user.UserID
+        });
 
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: "Login failed", details: err });
     }
 };

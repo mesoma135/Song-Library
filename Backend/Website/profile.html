@@ -2,184 +2,223 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile - Songify</title>
-
+    <title>User Profile & Management - Songify</title>
     <style>
         /* ——— GLOBAL ——— */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            line-height: 1.6;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #121212; color: #ffffff; line-height: 1.6; }
 
         /* ——— NAVBAR ——— */
-        .navbar {
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background-color: #181818; border-bottom: 1px solid #2a2a2a; position: sticky; top: 0; z-index: 10; }
+        .logo a { font-size: 24px; font-weight: bold; color: #ff1db9; text-decoration: none; }
+        .nav-links a { color: #ffffff; text-decoration: none; margin: 0 15px; transition: color 0.3s ease; }
+        .nav-links a:hover, .nav-links a.active { color: #ff1db9; }
+
+        /* ——— CONTAINERS ——— */
+        .profile-container, .user-management-container, .banned-users-container {
+            width: 60%; margin: 60px auto; background-color: #1f1f1f; padding: 40px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .profile-container h2, .user-management-container h2, .banned-users-container h2 { text-align: center; margin-bottom: 20px; font-size: 32px; color: #ff1db9; }
+
+        /* ——— PROFILE ITEM ——— */
+        .profile-item { margin: 15px 0; padding: 15px; background-color: #2a2a2a; border-radius: 10px; display: flex; }
+        .profile-label { font-weight: bold; color: #ff1db9; width: 120px; }
+
+        .role-badge { padding: 6px 12px; border-radius: 8px; font-weight: bold; }
+        .admin { background-color: #ff4444; }
+        .user { background-color: #4444ff; }
+
+        /* ——— USER MANAGEMENT / BANNED USERS ROWS ——— */
+        .user-row, .banned-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 50px;
-            background-color: #181818;
+            padding: 12px 0;
             border-bottom: 1px solid #2a2a2a;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            align-items: center;
         }
 
-        .logo a {
-            font-size: 24px;
-            font-weight: bold;
-            color: #ff1db9;
-            text-decoration: none;   /* remove link underline */
+        .user-row > div, .banned-row > div {
+            padding: 0 8px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
-        .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            margin: 0 15px;
-            transition: color 0.3s ease;
-        }
+        /* column widths */
+        .col-username { width: 20%; }
+        .col-email { width: 35%; }      /* wider email column */
+        .col-country { width: 15%; }
+        .col-role { width: 10%; }
+        .col-joined { width: 15%; }
+        .col-action { width: 100px; text-align: right; margin-left:auto; } /* push button far right */
 
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #ff1db9;
-        }
+        button.ban-btn { padding: 6px 12px; border: none; border-radius: 5px; background-color: #ff4444; color: #fff; cursor: pointer; }
+        button.ban-btn:disabled { background-color: #555; cursor: not-allowed; }
+        button.unban-btn { padding: 6px 12px; border: none; border-radius: 5px; background-color: #4444ff; color: #fff; cursor: pointer; }
 
-        /* ——— PROFILE CARD ——— */
-        .profile-container {
-            width: 60%;
-            margin: 60px auto;
-            background-color: #1f1f1f;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-
-        .profile-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 32px;
-            color: #ff1db9;
-        }
-
-        .profile-item {
-            margin: 15px 0;
-            padding: 15px;
-            background-color: #2a2a2a;
-            border-radius: 10px;
-        }
-
-        .profile-label {
-            font-weight: bold;
-            color: #ff1db9;
-        }
-
-        .role-badge {
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
-        .admin {
-            background-color: #ff4444;
-        }
-
-        .user {
-            background-color: #4444ff;
-        }
+        .banned-row { opacity: 0.6; }
+        .banned-row { opacity: 0.6; }
     </style>
 </head>
-
 <body>
 
-    <!-- ——— NAVBAR ——— -->
-    <header class="navbar">
-        <div class="logo">
-            <a href="index.html">Songify</a>
-        </div>
-        <nav class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="Songs.html">Songs</a>
-            <a href="Artists.html">Artists</a>
-            <a href="Playlists.html">Playlists</a>
-            <a href="musicNews.html">News</a>
-            <a href="views.html">Views</a>
-            <a href="profile.html" class="active">Profile</a>
-        </nav>
-    </header>
+<!-- ——— NAVBAR ——— -->
+<header class="navbar">
+    <div class="logo"><a href="index.html">Songify</a></div>
+    <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="Songs.html">Songs</a>
+        <a href="Artists.html">Artists</a>
+        <a href="Playlists.html">Playlists</a>
+        <a href="musicNews.html">News</a>
+        <a href="views.html">Views</a>
+        <a href="profile.html" class="active">Profile</a>
+    </nav>
+</header>
 
-    <!-- ——— PROFILE CONTENT ——— -->
-    <div class="profile-container">
-        <h2>Your Profile</h2>
+<!-- ——— PROFILE CONTENT ——— -->
+<div class="profile-container">
+    <h2>Your Profile</h2>
+    <div id="profileContent"></div>
+</div>
 
-        <div id="profileContent">
-            <!-- Filled by JS -->
-        </div>
-    </div>
+<!-- ——— USER MANAGEMENT ——— -->
+<div class="user-management-container" id="userManagementContainer" style="display:none;">
+    <h2>User Management</h2>
+    <div id="userRowsContainer">Loading users...</div>
+</div>
 
-    <script>
-        async function loadProfile() {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    alert("You must be logged in.");
-                    window.location.href = "login.html";
-                    return;
-                }
+<!-- ——— BANNED USERS ——— -->
+<div class="banned-users-container" id="bannedUsersContainer" style="display:none;">
+    <h2>Banned Users</h2>
+    <div id="bannedRowsContainer">Loading banned users...</div>
+</div>
 
-                const res = await fetch("http://localhost:3000/api/userprofile/user", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
+<script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("You must be logged in.");
+        window.location.href = "login.html";
+    }
 
-                const data = await res.json();
-                // to format join date
-                const formattedDate = new Date(data.JoinDate).toISOString().split("T")[0];
-                if (!res.ok) {
-                    document.getElementById("profileContent").innerHTML =
-                        `<p style="color:red;">Error loading profile.</p>`;
-                    return;
-                }
+    // ——— Load current profile ———
+    async function loadProfile() {
+        try {
+            const res = await fetch("http://localhost:3000/api/userprofile/user", { headers: { "Authorization": `Bearer ${token}` } });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to load profile");
 
-                const roleClass = data.role === "admin" ? "admin" : "user";
+            const formattedDate = new Date(data.JoinDate).toISOString().split("T")[0];
+            const roleClass = data.role === "admin" ? "admin" : "user";
 
-                document.getElementById("profileContent").innerHTML = `
-                    <div class="profile-item">
-                        <span class="profile-label">Username:</span> ${data.UserName}
-                    </div>
-                    <div class="profile-item">
-                        <span class="profile-label">Email:</span> ${data.Email}
-                    </div>
-                    <div class="profile-item">
-                        <span class="profile-label">Country:</span> ${data.Country}
-                    </div>
-                    <div class="profile-item">
-                        <span class="profile-label">Joined:</span> ${formattedDate}
-                    </div>
-                    <div class="profile-item">
-                        <span class="profile-label">Role:</span> 
-                        <span class="role-badge ${roleClass}">${data.role.toUpperCase()}</span>
-                    </div>
-                `;
-            } catch (err) {
-                console.error(err);
+            document.getElementById("profileContent").innerHTML = `
+            <div class="profile-item"><span class="profile-label">Username:</span> ${data.UserName}</div>
+            <div class="profile-item"><span class="profile-label">Email:</span> ${data.Email}</div>
+            <div class="profile-item"><span class="profile-label">Country:</span> ${data.Country || "N/A"}</div>
+            <div class="profile-item"><span class="profile-label">Joined:</span> ${formattedDate}</div>
+            <div class="profile-item"><span class="profile-label">Role:</span> <span class="role-badge ${roleClass}">${data.role.toUpperCase()}</span></div>
+        `;
 
-                document.getElementById("profileContent").innerHTML =
-                    `<p style="color:red;">Failed to load profile.</p>`;
+            // Show management sections only for admins
+            if(data.role === "admin") {
+                document.getElementById("userManagementContainer").style.display = "block";
+                document.getElementById("bannedUsersContainer").style.display = "block";
+                loadAllUsers();
+                loadBannedUsers();
             }
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById("profileContent").innerHTML = `<p style="color:red;">Failed to load profile.</p>`;
         }
+    }
 
-        loadProfile();
-    </script>
+    // ——— Load all users ———
+    async function loadAllUsers() {
+        try {
+            const res = await fetch("http://localhost:3000/api/userprofile/allUsers", { headers: { "Authorization": `Bearer ${token}` } });
+            const users = await res.json();
+            if(!res.ok) throw new Error(users.error || "Failed to load users");
 
+            const container = document.getElementById("userRowsContainer");
+            container.innerHTML = '';
+
+            users.filter(u => u.isBanned === 0).forEach(user => {
+                const formattedDate = new Date(user.JoinDate).toISOString().split("T")[0];
+                const row = document.createElement("div");
+                row.className = "user-row";
+                row.innerHTML = `
+                <div class="col-username">${user.UserName}</div>
+                <div class="col-email">${user.Email}</div>
+                <div class="col-country">${user.Country || "N/A"}</div>
+                <div class="col-role">${user.role}</div>
+                <div class="col-joined">${formattedDate}</div>
+                <div class="col-action"><button class="ban-btn" onclick="banUser(${user.UserID})">Ban</button></div>
+            `;
+                container.appendChild(row);
+            });
+        } catch(err) {
+            console.error(err);
+            document.getElementById("userRowsContainer").innerHTML = `<p style="color:red;">Failed to load users.</p>`;
+        }
+    }
+
+    // ——— Load banned users ———
+    async function loadBannedUsers() {
+        try {
+            const res = await fetch("http://localhost:3000/api/userprofile/allUsers", { headers: { "Authorization": `Bearer ${token}` } });
+            const users = await res.json();
+            if(!res.ok) throw new Error(users.error || "Failed to load banned users");
+
+            const container = document.getElementById("bannedRowsContainer");
+            container.innerHTML = '';
+
+            users.filter(u => u.isBanned === 1).forEach(user => {
+                const formattedDate = new Date(user.JoinDate).toISOString().split("T")[0];
+                const row = document.createElement("div");
+                row.className = "banned-row";
+                row.innerHTML = `
+                <div class="col-username">${user.UserName}</div>
+                <div class="col-email">${user.Email}</div>
+                <div class="col-country">${user.Country || "N/A"}</div>
+                <div class="col-role">${user.role}</div>
+                <div class="col-joined">${formattedDate}</div>
+                <div class="col-action"><button class="unban-btn" onclick="unbanUser(${user.UserID})">Unban</button></div>
+            `;
+                container.appendChild(row);
+            });
+        } catch(err) {
+            console.error(err);
+            document.getElementById("bannedRowsContainer").innerHTML = `<p style="color:red;">Failed to load banned users.</p>`;
+        }
+    }
+
+    // ——— Ban / Unban functions ———
+    async function banUser(userId) {
+        if(!confirm("Are you sure you want to ban this user?")) return;
+        try {
+            const res = await fetch(`http://localhost:3000/api/userprofile/ban/${userId}`, { method: "POST", headers: { "Authorization": `Bearer ${token}` } });
+            const data = await res.json();
+            if(!res.ok) throw new Error(data.error || "Failed to ban user");
+            alert(data.message);
+            loadAllUsers();
+            loadBannedUsers();
+        } catch(err) { console.error(err); alert("Error banning user"); }
+    }
+
+    async function unbanUser(userId) {
+        if(!confirm("Are you sure you want to unban this user?")) return;
+        try {
+            const res = await fetch(`http://localhost:3000/api/userprofile/unban/${userId}`, { method: "POST", headers: { "Authorization": `Bearer ${token}` } });
+            const data = await res.json();
+            if(!res.ok) throw new Error(data.error || "Failed to unban user");
+            alert(data.message);
+            loadAllUsers();
+            loadBannedUsers();
+        } catch(err) { console.error(err); alert("Error unbanning user"); }
+    }
+
+    // ——— Initialize ———
+    window.addEventListener('DOMContentLoaded', loadProfile);
+</script>
 </body>
 </html>
