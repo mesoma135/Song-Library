@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Songify - Playlists</title>
+  <link rel="stylesheet" href="Style.css">
+  <style>
+    body { background-color: #121212; color: #fff; font-family: Arial, sans-serif; }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background-color: #1f1f1f;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .navbar .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff1db9;
+    }
+
+    .logo a {
+      text-decoration: none;
+      color: #ff1db9;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 25px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #ff1db9;
+    }
+
+    .nav-links a.active {
+      color: #ff1db9;
+      font-weight: bold;
+    }
+    .container { max-width: 900px; margin: 50px auto; }
+    .playlist-form, .playlists { margin-bottom: 40px; }
+    input[type="text"] { padding: 10px; border-radius: 5px; border: none; margin-right: 10px; width: 250px; }
+    button { padding: 10px 15px; border-radius: 5px; border: none; background-color: #ff1db9; color: #fff; cursor: pointer; }
+    .playlist { background-color: #1f1f1f; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+    .playlist h3 { margin-bottom: 10px; }
+    .song-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 10px;
+      background-color: #1f1f1f;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      color: #fff;
+    }
+
+    .song-item .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .song-item select {
+      padding: 8px 10px;
+      border-radius: 5px;
+      border: 1px solid #000;
+      background-color: #2a2a2a;
+      color: #fff;
+      width: 200px;
+    }
+
+    .song-item select option {
+      background-color: #2a2a2a;
+      color: #fff;
+    }
+
+    .song-item button {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: none;
+      background-color: #ff1db9;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .song-item button:hover {
+      background-color: #e01aa5;
+    }
+
+    .playlist-form input{
+      border: 1px solid #000;
+      background-color: #2a2a2a;
+      color: #fff;
+    }
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    .toast {
+      color: white;
+      padding: 12px 18px;
+      margin-top: 10px;
+      border-radius: 6px;
+      font-size: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slide-in 0.4s forwards, fade-out 0.4s 2.5s forwards;
+    }
+
+    .toast-success {
+      background-color: #1db954; /* green */
+    }
+
+    .toast-error {
+      background-color: #e63946; /* red */
+    }
+
+
+
+    @keyframes slide-in {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fade-out {
+      to {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+
+
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="logo"><a href="index.html">Songify</a></div>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="Songs.html">Songs</a>
+    <a href="Artists.html">Artists</a>
+    <a href="Playlists.html" class="active">Playlists</a>
+    <a href="musicNews.html">News</a>
+    <a href='views.html'>Views</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="playlist-form">
+    <h2>Create New Playlist</h2>
+    <input type="text" id="playlistName" placeholder="Playlist Name">
+    <button onclick="createPlaylist()">Create</button>
+  </div>
+
+  <div class="playlists" id="playlistsContainer">
+    <h2>Your Playlists</h2>
+  </div>
+
+  <div class="all-songs" id="allSongsContainer">
+    <h2>All Songs</h2>
+    <div id="searchBar" style="margin-bottom: 15px;">
+      <input type="text" id="songSearch" placeholder="Search songs..." style="padding: 10px; width: 100%; max-width: 300px; border-radius: 5px; border: 1px solid #000; background-color: #2a2a2a; color: #fff;">
+      <select id="searchType" style="padding: 10px; border-radius: 5px; background-color:#2a2a2a; color:#fff; border: 1px solid #000; margin-left: 10px;">
+        <option value="title">Search by Title</option>
+        <option value="artist">Search by Artist</option>
+      </select>
+    </div>
+
+    <div id="songsList"></div>
+  </div>
+</div>
+<div id="toast-container"></div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("You must be logged in to view playlists");
+      window.location.href = "login.html";
+    }
+
+    window.songData = [];
+    window.playlists = [];
+
+    async function loadAllSongs() {
+      try {
+        const songsRes = await fetch('http://localhost:3000/api/song/allWithArtist');
+        const allSongs = await songsRes.json();
+        window.songData = allSongs.sort((a,b) => a.Title.localeCompare(b.Title));
+        displaySongs(window.songData);
+
+        const searchInput = document.getElementById('songSearch');
+        const searchType = document.getElementById('searchType');
+
+        const filterSongs = () => {
+          const query = searchInput.value.toLowerCase();
+          const type = searchType.value;
+
+          const filtered = window.songData.filter(song => {
+            if (type === 'title') return song.Title.toLowerCase().startsWith(query);
+            if (type === 'artist') return song.ArtistName.toLowerCase().startsWith(query);
+            return true;
+          });
+
+          displaySongs(filtered);
+        };
+
+        searchInput.addEventListener('input', filterSongs);
+        searchType.addEventListener('change', filterSongs);
+
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load songs or playlists');
+      }
+    }
+
+    function displaySongs(songs) {
+      const container = document.getElementById('songsList');
+      container.innerHTML = '';
+
+      const playlists = window.playlists || [];
+
+      songs.forEach(song => {
+        const div = document.createElement('div');
+        div.classList.add('song-item');
+
+        const leftDiv = document.createElement('div');
+        leftDiv.style.display = 'flex';
+        leftDiv.style.alignItems = 'center';
+        leftDiv.style.gap = '10px';
+        leftDiv.innerHTML = `
+          <span>${song.Title}</span>
+          <span style="color:#aaa;">(${song.ArtistName})</span>
+          <span style="color:#ff1db9;">${song.Length}</span>
+      `;
+
+        const controlsDiv = document.createElement('div');
+        controlsDiv.classList.add('controls');
+
+        const select = document.createElement('select');
+        playlists.forEach(pl => {
+          const option = document.createElement('option');
+          option.value = pl.PlaylistID;
+          option.textContent = pl.PlaylistName;
+          select.appendChild(option);
+        });
+
+        const addBtn = document.createElement('button');
+        addBtn.textContent = 'Add';
+        addBtn.onclick = () => addSongToPlaylist(song.SongID, select.value);
+
+        controlsDiv.appendChild(select);
+        controlsDiv.appendChild(addBtn);
+
+        div.appendChild(leftDiv);
+        div.appendChild(controlsDiv);
+        container.appendChild(div);
+      });
+    }
+
+    async function loadUserPlaylists() {
+    console.log("Token being sent:", token);
+
+      try {
+        const res = await fetch('http://localhost:3000/api/playlist', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to fetch playlists');
+
+        const playlists = await res.json();
+        window.playlists = playlists;
+
+        const container = document.getElementById('playlistsContainer');
+        container.innerHTML = '<h2>Your Playlists</h2>';
+
+        playlists.forEach(pl => {
+          const date = new Date(pl.DateCreated);
+          const formattedDate = date.toISOString().split('T')[0];
+
+          const div = document.createElement('div');
+          div.classList.add('playlist');
+          div.innerHTML = `
+  <h3>${pl.PlaylistName}  |   Created on: ${formattedDate}</h3>
+
+  <button onclick="viewPlaylist(${pl.PlaylistID})">View Songs</button>
+
+  <button onclick="editPlaylistName(${pl.PlaylistID}, '${pl.PlaylistName.replace(/'/g, "\\'")}')">
+    Edit Name
+  </button>
+
+  <button onclick="deletePlaylist(${pl.PlaylistID})">Delete</button>
+  <button onclick="exportPlaylistCSV(${pl.PlaylistID})">Export CSV</button>
+  <button onclick="exportPlaylistPDF(${pl.PlaylistID})">Export PDF</button>
+`;
+
+          container.appendChild(div);
+        });
+
+        displaySongs(window.songData);
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load playlists');
+      }
+    }
+
+    async function createPlaylist() {
+      const name = document.getElementById('playlistName').value.trim();
+      if (!name) return alert('Please enter a playlist name');
+
+      try {
+        const res = await fetch('http://localhost:3000/api/playlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ name })
+        });
+
+        const text = await res.text();
+        let result;
+        try { result = JSON.parse(text); } catch {}
+        if (res.ok) {
+          showToast("Playlist created successfully.", "success")
+          await loadUserPlaylists();
+        } else {
+          alert(result?.error || 'Failed to create playlist');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to server');
+      }
+    }
+
+    async function deletePlaylist(id) {
+      if (!confirm('Delete this playlist?')) return;
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlist/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        await res.text();
+        await loadUserPlaylists();
+        showToast("Playlist deleted successfully.", "success")
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function addSongToPlaylist(songId, playlistId) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ songId })
+        });
+
+        const text = await res.text();
+        if (res.ok) {
+          showToast("Song added to playlist!", "success");
+
+
+          // Check if playlist is open
+          const playlistDiv = Array.from(document.querySelectorAll('.playlist'))
+                  .find(div => div.querySelector(`button[onclick*="viewPlaylist(${playlistId})"]`));
+
+          if (playlistDiv) {
+            const ul = playlistDiv.querySelector('.playlist-songs');
+            if (ul) {
+              // Find song info from global songData
+              const song = window.songData.find(s => s.SongID === songId);
+              if (song) {
+                const li = document.createElement('li');
+                li.classList.add('song-item');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.alignItems = 'center';
+                li.style.marginBottom = '5px';
+                li.style.padding = '5px 10px';
+                li.style.backgroundColor = '#1f1f1f';
+                li.style.borderRadius = '5px';
+                li.style.color = '#fff';
+
+                const leftSpan = document.createElement('span');
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = song.Title + ' ';
+                const artistSpan = document.createElement('span');
+                artistSpan.textContent = `(${song.ArtistName}) `;
+                artistSpan.style.color = '#aaa';
+                const lengthSpan = document.createElement('span');
+                lengthSpan.textContent = `[${song.Length}]`;
+                lengthSpan.style.color = '#ff1db9';
+
+                leftSpan.appendChild(titleSpan);
+                leftSpan.appendChild(artistSpan);
+                leftSpan.appendChild(lengthSpan);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.style.padding = '5px 10px';
+                deleteBtn.style.border = 'none';
+                deleteBtn.style.borderRadius = '5px';
+                deleteBtn.style.backgroundColor = '#ff1db9';
+                deleteBtn.style.color = '#fff';
+                deleteBtn.style.cursor = 'pointer';
+                deleteBtn.style.transition = 'background 0.3s ease';
+                deleteBtn.onmouseover = () => deleteBtn.style.backgroundColor = '#e01aa5';
+                deleteBtn.onmouseout = () => deleteBtn.style.backgroundColor = '#ff1db9';
+                deleteBtn.onclick = async () => removeSongFromPlaylist(playlistId, songId, li);
+
+                li.appendChild(leftSpan);
+                li.appendChild(deleteBtn);
+                ul.appendChild(li);
+              }
+            }
+          }
+
+        } else {
+          let result; try { result = JSON.parse(text); } catch {}
+          showToast(result?.error || 'Failed to add song.', "error");
+        }
+
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to add song.', error);
+      }
+    }
+
+
+    async function viewPlaylist(playlistId) {
+      try {
+        const playlistDiv = Array.from(document.querySelectorAll('.playlist'))
+                .find(div => div.querySelector(`button[onclick*="viewPlaylist(${playlistId})"]`));
+        if (!playlistDiv) return;
+
+        const oldSongList = playlistDiv.querySelector('.playlist-songs');
+        if (oldSongList) { oldSongList.remove(); return; }
+
+        const res = await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to fetch playlist songs');
+
+        const songs = await res.json();
+        const ul = document.createElement('ul');
+        ul.classList.add('playlist-songs');
+        ul.style.marginTop = '10px';
+        ul.style.paddingLeft = '20px';
+
+        songs.forEach(song => {
+          const li = document.createElement('li');
+          li.classList.add('song-item');
+          li.style.display = 'flex';
+          li.style.justifyContent = 'space-between';
+          li.style.alignItems = 'center';
+          li.style.marginBottom = '5px';
+          li.style.padding = '5px 10px';
+          li.style.backgroundColor = '#1f1f1f';
+          li.style.borderRadius = '5px';
+          li.style.color = '#fff';
+
+          const leftSpan = document.createElement('span');
+          const titleSpan = document.createElement('span');
+          titleSpan.textContent = song.Title + ' ';
+          const artistSpan = document.createElement('span');
+          artistSpan.textContent = `(${song.ArtistName}) `;
+          artistSpan.style.color = '#aaa';
+          const lengthSpan = document.createElement('span');
+          lengthSpan.textContent = `[${song.Length}]`;
+          lengthSpan.style.color = '#ff1db9';
+
+          leftSpan.appendChild(titleSpan);
+          leftSpan.appendChild(artistSpan);
+          leftSpan.appendChild(lengthSpan);
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.style.padding = '5px 10px';
+          deleteBtn.style.border = 'none';
+          deleteBtn.style.borderRadius = '5px';
+          deleteBtn.style.backgroundColor = '#ff1db9';
+          deleteBtn.style.color = '#fff';
+          deleteBtn.style.cursor = 'pointer';
+          deleteBtn.style.transition = 'background 0.3s ease';
+          deleteBtn.onmouseover = () => deleteBtn.style.backgroundColor = '#e01aa5';
+          deleteBtn.onmouseout = () => deleteBtn.style.backgroundColor = '#ff1db9';
+          deleteBtn.onclick = async () => {
+            try {
+              await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs/${song.SongID}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              li.remove();
+            } catch (err) {
+              console.error(err);
+              alert('Failed to remove song');
+            }
+          };
+
+          li.appendChild(leftSpan);
+          li.appendChild(deleteBtn);
+          ul.appendChild(li);
+        });
+
+        playlistDiv.appendChild(ul);
+
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load songs for this playlist');
+      }
+    }
+
+    async function removeSongFromPlaylist(playlistId, songId, songElement) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlistSong/${playlistId}/songs/${songId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const text = await res.text();
+        if (res.ok) {
+
+          songElement.remove();
+          alert("TEST")
+        }
+        else { let result; try { result = JSON.parse(text); } catch {} alert(result?.error || 'Failed to remove song'); }
+      } catch (err) {
+        console.error(err);
+      }
+
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadUserPlaylists();
+      await loadAllSongs();
+    });
+
+    async function exportPlaylistCSV(playlistId) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlist/export/playlists/csv/${playlistId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) {
+          throw new Error('Failed to export CSV');
+        }
+        const blob = await res.blob();
+        const contentDisposition = res.headers.get('Content-Disposition');
+        let filename = `playlist_${playlistId}.csv`; // fallback
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="?([^"]+)"?/);
+          if (match) filename = match[1];
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to export.", "error");
+      }
+    }
+
+    async function exportPlaylistPDF(playlistId) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlist/export/playlists/pdf/${playlistId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to export PDF');
+
+        const blob = await res.blob();
+        const contentDisposition = res.headers.get('Content-Disposition');
+        let filename = `playlist_${playlistId}.pdf`; // fallback
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="?([^"]+)"?/);
+          if (match) filename = match[1];
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to export.", "error");
+      }
+    }
+    async function editPlaylistName(id, oldName) {
+      const newName = prompt("Enter a new playlist name:", oldName);
+      if (!newName || newName.trim() === "") {
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/playlist/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ name: newName })
+        });
+
+        const text = await res.text();
+        let result;
+        try { result = JSON.parse(text); } catch {}
+
+        if (res.ok) {
+          showToast("Name edited successfully.", "success")
+          loadUserPlaylists(); // refresh UI
+        } else {
+          alert(result?.error || "Failed to rename playlist");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error connecting to server");
+      }
+    }
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toast-container");
+
+      const toast = document.createElement("div");
+      toast.classList.add("toast");
+
+      // Apply type class (toast-success, toast-error, toast-warning)
+      toast.classList.add(`toast-${type}`);
+
+      toast.textContent = message;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+
+
+
+
+  </script>
+</body>
+</html>

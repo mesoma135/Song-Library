@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Songify - Songs</title>
+  <link rel="stylesheet" href="Style.css">
+  <style>
+    .song-list { max-width: 800px; margin: 50px auto; }
+    .artist-section { margin-bottom: 40px; }
+    .artist-section h2 { color: #ff1db9; margin-bottom: 15px; }
+    .song-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 15px;
+      background-color: #1f1f1f;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      color: #fff;
+    }
+    .song-item h3, .song-item p { margin: 0; }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background-color: #1f1f1f;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .navbar .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff1db9;
+    }
+
+    .logo a {
+      text-decoration: none;
+      color: #ff1db9;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #ff1db9;
+    }
+
+    .nav-links a.active {
+      color: #ff1db9;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<header class="navbar">
+  <div class="logo"><a href="index.html">Songify</a></div>
+  <nav class="nav-links">
+    <a href='index.html'>Home</a>
+    <a href='Songs.html' class="active">Songs</a>
+    <a href='Artists.html'>Artists</a>
+    <a href='Playlists.html'>Playlists</a>
+    <a href="musicNews.html">News</a>
+    <a href='views.html'>Views</a>
+  </nav>
+</header>
+
+<section class="song-list" id="songList">
+  <!-- Songs will populate here with the JS below -->
+</section>
+
+<script>
+  async function loadSongsByArtist() {
+    try {
+      const res = await fetch('http://localhost:3000/api/song/allWithArtist');
+      const songs = await res.json();
+
+      const container = document.getElementById('songList');
+
+      // Sort all songs by NumPlays descending
+      songs.sort((a, b) => b.NumPlays - a.NumPlays);
+
+      // Group songs by artist
+      const grouped = {};
+      songs.forEach(song => {
+        const artist = song.ArtistName || 'Unknown Artist';
+        if (!grouped[artist]) grouped[artist] = [];
+        grouped[artist].push(song);
+      });
+
+      // Render grouped songs
+      Object.keys(grouped).forEach(artist => {
+        const artistDiv = document.createElement('div');
+        artistDiv.classList.add('artist-section');
+        artistDiv.innerHTML = `<h2>${artist}</h2>`;
+
+        grouped[artist].forEach((song, index) => {
+          const songDiv = document.createElement('div');
+          songDiv.classList.add('song-item');
+          songDiv.innerHTML = `<h3>${index + 1}. ${song.Title}</h3>
+                               <p>${song.NumPlays.toLocaleString()} plays</p>`;
+          artistDiv.appendChild(songDiv);
+        });
+
+        container.appendChild(artistDiv);
+      });
+
+    } catch (err) {
+      console.error('Error loading songs by artist:', err);
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', loadSongsByArtist);
+</script>
+
+</body>
+</html>
